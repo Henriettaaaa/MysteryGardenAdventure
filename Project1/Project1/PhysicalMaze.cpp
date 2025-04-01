@@ -178,3 +178,14 @@ std::vector<int> PhysicalMaze::findPath(int size) {
     
     return path;
 }
+
+bool PhysicalMaze::hasWall(int cell1, int cell2) const {
+    // 检查是否存在这面墙
+    for (const auto& wall : walls) {
+        if ((wall.first == cell1 && wall.second == cell2) ||
+            (wall.first == cell2 && wall.second == cell1)) {
+            return true;  // 有墙
+        }
+    }
+    return false;  // 没有墙
+}

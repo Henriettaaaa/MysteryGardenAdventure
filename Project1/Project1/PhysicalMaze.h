@@ -1,6 +1,5 @@
 //迷宫的底层物理生成
-#ifndef PHYSICALMAZE_H
-#define PHYSICALMAZE_H
+#pragma once
 
 #include <vector>
 #include <algorithm>
@@ -9,7 +8,7 @@
 class PhysicalMaze{  //类定义的时候没有(),函数定义才需要()
 private:
     const int size;  //通过带参构造进行初始化
-    std::vector<int> way;  //?用于存储迷宫路径
+    std::vector<bool> way;  //用于存储迷宫路径
     std::vector<int> parent;  //用于存储每个格子的根节点,自己就是根节点的，parent值=-1
     std::vector<int> weight;  //用于存储每个格子的权重(用于带权重的合并)
     std::vector<std::pair<int,int>> walls;  //用于存储所有墙
@@ -29,6 +28,10 @@ public:
     void unionSet(int x, int y, int i);  // 合并
 
     std::vector<int> findPath(int size);  // 得到迷宫走通的路径
-};
 
-#endif
+    // 检查两个相邻格子之间是否有墙
+    bool hasWall(int cell1, int cell2) const;
+    
+    // 友元类声明，允许VirtualMaze访问私有成员
+    friend class VirtualMaze;
+};
