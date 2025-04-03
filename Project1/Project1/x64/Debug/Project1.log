@@ -1,18 +1,20 @@
 ﻿  main.cpp
-D:\AAAA\Project1\Project1\main.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-D:\AAAA\Project1\Project1\PhysicalMaze.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-D:\AAAA\Project1\Project1\VirtualMaze.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\AAMysteryGardenAdventure\Project1_v2_AB相对路径\Project1\main.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\AAMysteryGardenAdventure\Project1_v2_AB相对路径\Project1\PhysicalMaze.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\AAMysteryGardenAdventure\Project1_v2_AB相对路径\Project1\VirtualMaze.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
   PhysicalMaze.cpp
-D:\AAAA\Project1\Project1\PhysicalMaze.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-D:\AAAA\Project1\Project1\PhysicalMaze.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-D:\AAAA\Project1\Project1\PhysicalMaze.cpp(31,16): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+D:\AAMysteryGardenAdventure\Project1_v2_AB相对路径\Project1\PhysicalMaze.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\AAMysteryGardenAdventure\Project1_v2_AB相对路径\Project1\PhysicalMaze.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\AAMysteryGardenAdventure\Project1_v2_AB相对路径\Project1\PhysicalMaze.cpp(31,16): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
   VirtualMaze.cpp
-D:\AAAA\Project1\Project1\VirtualMaze.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-D:\AAAA\Project1\Project1\VirtualMaze.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-D:\AAAA\Project1\Project1\PhysicalMaze.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-D:\AAAA\Project1\Project1\VirtualMaze.cpp(10,70): warning C4244: “参数”: 从“float”转换到“unsigned int”，可能丢失数据
-D:\AAAA\Project1\Project1\VirtualMaze.cpp(10,45): warning C4244: “参数”: 从“float”转换到“unsigned int”，可能丢失数据
+D:\AAMysteryGardenAdventure\Project1_v2_AB相对路径\Project1\VirtualMaze.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\AAMysteryGardenAdventure\Project1_v2_AB相对路径\Project1\VirtualMaze.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\AAMysteryGardenAdventure\Project1_v2_AB相对路径\Project1\PhysicalMaze.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\AAMysteryGardenAdventure\Project1_v2_AB相对路径\Project1\VirtualMaze.cpp(10,70): warning C4244: “参数”: 从“float”转换到“unsigned int”，可能丢失数据
+D:\AAMysteryGardenAdventure\Project1_v2_AB相对路径\Project1\VirtualMaze.cpp(10,45): warning C4244: “参数”: 从“float”转换到“unsigned int”，可能丢失数据
+D:\AAMysteryGardenAdventure\Project1_v2_AB相对路径\Project1\VirtualMaze.cpp(189,13): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+D:\AAMysteryGardenAdventure\Project1_v2_AB相对路径\Project1\VirtualMaze.cpp(249,18): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
   正在生成代码...
-  Project1.vcxproj -> D:\AAAA\Project1\x64\Debug\Project1.exe
+  Project1.vcxproj -> D:\AAMysteryGardenAdventure\Project1_v2_AB相对路径\x64\Debug\Project1.exe
   'pwsh.exe' 不是内部或外部命令，也不是可运行的程序
   或批处理文件。
