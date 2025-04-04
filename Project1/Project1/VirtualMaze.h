@@ -6,6 +6,9 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include "PhysicalMaze.h"
+#include <map>
+#include <utility>
+#include <string>
 
 //虚拟迷宫的底层是二维数组，用横纵坐标确定位置
 class VirtualMaze {
@@ -15,6 +18,9 @@ private:
     std::vector<std::vector<int>> maze;  // 0表示墙，1表示路
     sf::RenderWindow window;  // SFML窗口
     const float CELL_SIZE = 30.0f;  // 每个格子的像素大小
+
+    // 新增：用于存储每个位置的所有数字
+    std::map<std::pair<int, int>, std::vector<std::pair<int, sf::Color>>> cellNumbers;  // 存储每个位置的数字和对应的颜色
 
     // 按钮相关
     sf::RectangleShape button;

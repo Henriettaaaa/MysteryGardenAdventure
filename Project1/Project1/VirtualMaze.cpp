@@ -1,5 +1,7 @@
 #include "VirtualMaze.h"
 #include <iostream>
+#include <string>   // 为std::string
+#include <utility>  // 为std::pair
 
 VirtualMaze::VirtualMaze(int physicalSize) : size(physicalSize), showRelativePaths(false) {
     virtualSize = 2 * size + 1;
@@ -174,6 +176,7 @@ void VirtualMaze::convertToVirtualPath(const std::vector<int>& physicalPath) {
 }
 
 // !计算A和B的相对路径，存储到成员变量的三个数组里（A相对，B相对）
+// !感觉算的不太对，显示有问题，不知道是计算错误还是显示错误
 // 直接对成员变量进行修改
 void VirtualMaze::calculateRelativePath(const std::vector<int>& physicalPath) {
     // 清空之前的路径，保留
@@ -319,10 +322,15 @@ void VirtualMaze::calculateRelativePath(const std::vector<int>& physicalPath) {
 }
 
 // 画绝对路径和相对路径，已修改
+// !格子标浩需要结合算AB相对路径的算法修正，现在不对
 void VirtualMaze::drawRelativePaths() {
     window.clear(sf::Color::White);
+    
+    // 清空之前的数字记录
+    cellNumbers.clear();
+    int counter = 1;  // 数字计数器
 
-    // !绘制最短路径，现在画的是所有路线，已更改
+    // 绘制最短路径，现在画的是所有路线，已更改
     for (int pos : absolutePath) {
         int row = pos / virtualSize;  //虚拟迷宫格子的横坐标
         int col = pos % virtualSize;  //虚拟迷宫格子的纵坐标
@@ -330,8 +338,12 @@ void VirtualMaze::drawRelativePaths() {
         cell.setPosition(col * CELL_SIZE, row * CELL_SIZE);
         cell.setFillColor(sf::Color(200, 200, 200));  // 浅灰色
         window.draw(cell);
+        
+        // 记录数字和颜色
+        cellNumbers[{row, col}].push_back({counter++, sf::Color(100, 100, 100)});  // 深灰色数字
     }
 
+    counter = 1;  // 重置计数器
     // 绘制A的相对路径（蓝色）
     for (int pos : relativePathA) {
         int row = pos / virtualSize;
@@ -340,8 +352,12 @@ void VirtualMaze::drawRelativePaths() {
         cell.setPosition(col * CELL_SIZE, row * CELL_SIZE);
         cell.setFillColor(sf::Color::Blue);
         window.draw(cell);
+        
+        // 记录数字和颜色
+        cellNumbers[{row, col}].push_back({counter++, sf::Color::Blue});
     }
 
+    counter = 1;  // 重置计数器
     // 绘制B的相对路径（绿色）
     for (int pos : relativePathB) {
         int row = pos / virtualSize;
@@ -350,6 +366,9 @@ void VirtualMaze::drawRelativePaths() {
         cell.setPosition(col * CELL_SIZE, row * CELL_SIZE);
         cell.setFillColor(sf::Color::Green);
         window.draw(cell);
+        
+        // 记录数字和颜色
+        cellNumbers[{row, col}].push_back({counter++, sf::Color::Green});
     }
 
     // 绘制起点和终点（红色）
@@ -362,6 +381,31 @@ void VirtualMaze::drawRelativePaths() {
     endCell.setPosition((virtualSize - 2) * CELL_SIZE, (virtualSize - 2) * CELL_SIZE);
     endCell.setFillColor(sf::Color::Red);
     window.draw(endCell);
+
+    // 绘制所有数字
+    for (const auto& [pos, numbers] : cellNumbers) {
+        std::string text;
+        for (size_t i = 0; i < numbers.size(); ++i) {
+            text += std::to_string(numbers[i].first);
+            if (i < numbers.size() - 1) {
+                text += ",";
+            }
+        }
+        
+        sf::Text numberText;
+        numberText.setFont(font);
+        numberText.setString(text);
+        numberText.setCharacterSize(12);
+        numberText.setFillColor(sf::Color::Black);  // 统一使用黑色显示数字
+        
+        // 计算文本位置（居中）
+        sf::FloatRect textBounds = numberText.getLocalBounds();
+        float x = pos.second * CELL_SIZE + (CELL_SIZE - textBounds.width) / 2;
+        float y = pos.first * CELL_SIZE + (CELL_SIZE - textBounds.height) / 2;
+        numberText.setPosition(x, y);
+        
+        window.draw(numberText);
+    }
 }
 
 void VirtualMaze::setPath(const std::vector<int>& path) {

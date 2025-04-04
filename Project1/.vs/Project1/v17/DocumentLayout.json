@@ -1,25 +1,33 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\AAMysteryGardenAdventure\\Project1_v2_AB\u76F8\u5BF9\u8DEF\u5F84\\",
+  "WorkspaceRootPath": "D:\\AAMysteryGardenAdventure\\Project1\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|D:\\AAMysteryGardenAdventure\\Project1_v2_AB\u76F8\u5BF9\u8DEF\u5F84\\Project1\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|D:\\AAMysteryGardenAdventure\\Project1\\Project1\\MainScene.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|solutionrelative:Project1\\MainScene.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|D:\\AAMysteryGardenAdventure\\Project1\\Project1\\MainScene.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|solutionrelative:Project1\\MainScene.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|D:\\AAMysteryGardenAdventure\\Project1\\Project1\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|solutionrelative:Project1\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|D:\\AAMysteryGardenAdventure\\Project1_v2_AB\u76F8\u5BF9\u8DEF\u5F84\\Project1\\VirtualMaze.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|solutionrelative:Project1\\VirtualMaze.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|D:\\AAMysteryGardenAdventure\\Project1_v2_AB\u76F8\u5BF9\u8DEF\u5F84\\Project1\\PhysicalMaze.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|solutionrelative:Project1\\PhysicalMaze.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|D:\\AAMysteryGardenAdventure\\Project1_v2_AB\u76F8\u5BF9\u8DEF\u5F84\\Project1\\VirtualMaze.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|D:\\AAMysteryGardenAdventure\\Project1\\Project1\\VirtualMaze.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|solutionrelative:Project1\\VirtualMaze.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|D:\\AAMysteryGardenAdventure\\Project1_v2_AB\u76F8\u5BF9\u8DEF\u5F84\\Project1\\PhysicalMaze.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|D:\\AAMysteryGardenAdventure\\Project1\\Project1\\VirtualMaze.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|solutionrelative:Project1\\VirtualMaze.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|D:\\AAMysteryGardenAdventure\\Project1\\Project1\\PhysicalMaze.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|solutionrelative:Project1\\PhysicalMaze.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|D:\\AAMysteryGardenAdventure\\Project1\\Project1\\PhysicalMaze.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|solutionrelative:Project1\\PhysicalMaze.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
@@ -30,27 +38,52 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainScene.h",
+              "DocumentMoniker": "D:\\AAMysteryGardenAdventure\\Project1\\Project1\\MainScene.h",
+              "RelativeDocumentMoniker": "Project1\\MainScene.h",
+              "ToolTip": "D:\\AAMysteryGardenAdventure\\Project1\\Project1\\MainScene.h",
+              "RelativeToolTip": "Project1\\MainScene.h",
+              "ViewState": "AQIAADQAAAAAAAAAAAAAADgAAAAIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-04-04T12:13:08.772Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "MainScene.cpp",
+              "DocumentMoniker": "D:\\AAMysteryGardenAdventure\\Project1\\Project1\\MainScene.cpp",
+              "RelativeDocumentMoniker": "Project1\\MainScene.cpp",
+              "ToolTip": "D:\\AAMysteryGardenAdventure\\Project1\\Project1\\MainScene.cpp",
+              "RelativeToolTip": "Project1\\MainScene.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAAPAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-04-04T11:56:29.353Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "VirtualMaze.h",
-              "DocumentMoniker": "D:\\AAMysteryGardenAdventure\\Project1_v2_AB\u76F8\u5BF9\u8DEF\u5F84\\Project1\\VirtualMaze.h",
+              "DocumentMoniker": "D:\\AAMysteryGardenAdventure\\Project1\\Project1\\VirtualMaze.h",
               "RelativeDocumentMoniker": "Project1\\VirtualMaze.h",
-              "ToolTip": "D:\\AAMysteryGardenAdventure\\Project1_v2_AB\u76F8\u5BF9\u8DEF\u5F84\\Project1\\VirtualMaze.h",
+              "ToolTip": "D:\\AAMysteryGardenAdventure\\Project1\\Project1\\VirtualMaze.h",
               "RelativeToolTip": "Project1\\VirtualMaze.h",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAB4AAAATAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAARAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-04-03T14:33:14.667Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "PhysicalMaze.h",
-              "DocumentMoniker": "D:\\AAMysteryGardenAdventure\\Project1_v2_AB\u76F8\u5BF9\u8DEF\u5F84\\Project1\\PhysicalMaze.h",
+              "DocumentMoniker": "D:\\AAMysteryGardenAdventure\\Project1\\Project1\\PhysicalMaze.h",
               "RelativeDocumentMoniker": "Project1\\PhysicalMaze.h",
-              "ToolTip": "D:\\AAMysteryGardenAdventure\\Project1_v2_AB\u76F8\u5BF9\u8DEF\u5F84\\Project1\\PhysicalMaze.h",
+              "ToolTip": "D:\\AAMysteryGardenAdventure\\Project1\\Project1\\PhysicalMaze.h",
               "RelativeToolTip": "Project1\\PhysicalMaze.h",
               "ViewState": "AQIAABwAAAAAAAAAAAAswC0AAAAGAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
@@ -60,21 +93,21 @@
               "$type": "Document",
               "DocumentIndex": 3,
               "Title": "VirtualMaze.cpp",
-              "DocumentMoniker": "D:\\AAMysteryGardenAdventure\\Project1_v2_AB\u76F8\u5BF9\u8DEF\u5F84\\Project1\\VirtualMaze.cpp",
+              "DocumentMoniker": "D:\\AAMysteryGardenAdventure\\Project1\\Project1\\VirtualMaze.cpp",
               "RelativeDocumentMoniker": "Project1\\VirtualMaze.cpp",
-              "ToolTip": "D:\\AAMysteryGardenAdventure\\Project1_v2_AB\u76F8\u5BF9\u8DEF\u5F84\\Project1\\VirtualMaze.cpp",
+              "ToolTip": "D:\\AAMysteryGardenAdventure\\Project1\\Project1\\VirtualMaze.cpp",
               "RelativeToolTip": "Project1\\VirtualMaze.cpp",
-              "ViewState": "AQIAANkAAAAAAAAAAAAswJ4BAAACAAAA",
+              "ViewState": "AQIAAD8BAAAAAAAAAAAwwIcBAAANAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-04-03T14:32:36.065Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
               "Title": "PhysicalMaze.cpp",
-              "DocumentMoniker": "D:\\AAMysteryGardenAdventure\\Project1_v2_AB\u76F8\u5BF9\u8DEF\u5F84\\Project1\\PhysicalMaze.cpp",
+              "DocumentMoniker": "D:\\AAMysteryGardenAdventure\\Project1\\Project1\\PhysicalMaze.cpp",
               "RelativeDocumentMoniker": "Project1\\PhysicalMaze.cpp",
-              "ToolTip": "D:\\AAMysteryGardenAdventure\\Project1_v2_AB\u76F8\u5BF9\u8DEF\u5F84\\Project1\\PhysicalMaze.cpp",
+              "ToolTip": "D:\\AAMysteryGardenAdventure\\Project1\\Project1\\PhysicalMaze.cpp",
               "RelativeToolTip": "Project1\\PhysicalMaze.cpp",
               "ViewState": "AQIAAIwAAAAAAAAAAAAswL4AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
@@ -82,16 +115,15 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "main.cpp",
-              "DocumentMoniker": "D:\\AAMysteryGardenAdventure\\Project1_v2_AB\u76F8\u5BF9\u8DEF\u5F84\\Project1\\main.cpp",
+              "DocumentMoniker": "D:\\AAMysteryGardenAdventure\\Project1\\Project1\\main.cpp",
               "RelativeDocumentMoniker": "Project1\\main.cpp",
-              "ToolTip": "D:\\AAMysteryGardenAdventure\\Project1_v2_AB\u76F8\u5BF9\u8DEF\u5F84\\Project1\\main.cpp",
+              "ToolTip": "D:\\AAMysteryGardenAdventure\\Project1\\Project1\\main.cpp",
               "RelativeToolTip": "Project1\\main.cpp",
-              "ViewState": "AQIAAAMAAAAAAAAAAAAAAB0AAAABAAAA",
+              "ViewState": "AQIAAC8AAAAAAAAAAAAwwDUAAAAhAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-04-03T14:31:45.582Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-03T14:31:45.582Z"
             }
           ]
         }
