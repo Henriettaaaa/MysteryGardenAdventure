@@ -140,6 +140,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainScene.cpp" />
     <ClCompile Include="PhysicalMaze.cpp" />
+    <ClCompile Include="player_multi.cpp" />
     <ClCompile Include="VirtualMaze.cpp" />
   </ItemGroup>
   <ItemGroup>

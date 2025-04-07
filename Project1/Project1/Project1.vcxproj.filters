@@ -27,6 +27,9 @@
     <ClCompile Include="MainScene.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="player_multi.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PhysicalMaze.h">

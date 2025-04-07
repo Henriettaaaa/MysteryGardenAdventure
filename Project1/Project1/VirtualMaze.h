@@ -34,6 +34,12 @@ private:
     std::vector<int> relativePathA;  // A相对B的路径的虚拟坐标
     std::vector<int> relativePathB;  // B相对A的路径的虚拟坐标
 
+    // 玩家互动相关
+    bool playerInteractionEnabled;  // 是否启用玩家互动
+    std::pair<int, int> playerPosition;  // 玩家当前位置（虚拟坐标）
+    sf::Color playerColor;  // 玩家颜色
+    std::pair<int, int> lastPlayerPosition;  // 玩家上一个位置
+
     // 物理坐标到虚拟坐标的映射
     int physicalToVirtual(int physicalRow, int physicalCol) const;
     // !物理路径到虚拟路径的转换（考虑中间连接点），新加的, 传入物理最短路径，返回虚拟最短路径
@@ -51,6 +57,12 @@ private:
     // 计算相对路径
     void calculateRelativePath(const std::vector<int>& physicalPath);
 
+    // 玩家互动相关函数
+    void handleKeyPress(sf::Keyboard::Key key);
+    bool canMoveTo(int newRow, int newCol) const;
+    void drawPlayer();
+    void updatePlayerCell();
+
 public:
     VirtualMaze(int physicalSize);
     // 从物理迷宫构建虚拟迷宫
@@ -59,6 +71,8 @@ public:
     void display();
     // 设置路径
     void setPath(const std::vector<int>& path);
+    // 启用玩家互动
+    void enablePlayerInteraction();
 };
 
 #endif // VIRTUAL_MAZE_H

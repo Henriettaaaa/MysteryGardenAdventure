@@ -3,7 +3,7 @@
 #include <string>   // 为std::string
 #include <utility>  // 为std::pair
 
-VirtualMaze::VirtualMaze(int physicalSize) : size(physicalSize), showRelativePaths(false) {
+VirtualMaze::VirtualMaze(int physicalSize) : size(physicalSize), showRelativePaths(false), playerInteractionEnabled(false) {
     virtualSize = 2 * size + 1;
     // 初始化虚拟迷宫，全部置为墙（0）
     maze.resize(virtualSize, std::vector<int>(virtualSize, 0));
@@ -12,6 +12,11 @@ VirtualMaze::VirtualMaze(int physicalSize) : size(physicalSize), showRelativePat
     window.create(sf::VideoMode(virtualSize * CELL_SIZE, virtualSize * CELL_SIZE),
         "Virtual Maze", sf::Style::Close);
     window.setFramerateLimit(60);
+
+    // 初始化玩家位置和颜色
+    playerPosition = { 1, 1 };  // 起点位置（虚拟坐标）
+    lastPlayerPosition = { 1, 1 };  // 初始时与当前位置相同
+    playerColor = sf::Color(255, 165, 0);  // 橙色
 
     // 初始化按钮
     button.setSize(sf::Vector2f(200, 50));
@@ -105,6 +110,7 @@ bool VirtualMaze::isButtonClicked(sf::Vector2i mousePos) const {
 }
 
 //窗口展示，包含点击下一关之前和点击后，审查无问题
+//画的只是迷宫地图，没有玩家
 void VirtualMaze::drawMaze() {
     window.clear(sf::Color::White);
     //在没点击下一关按钮时，画普通迷宫（初始界面）
@@ -325,7 +331,7 @@ void VirtualMaze::calculateRelativePath(const std::vector<int>& physicalPath) {
 // !格子标浩需要结合算AB相对路径的算法修正，现在不对
 void VirtualMaze::drawRelativePaths() {
     window.clear(sf::Color::White);
-    
+
     // 清空之前的数字记录
     cellNumbers.clear();
     int counter = 1;  // 数字计数器
@@ -338,9 +344,9 @@ void VirtualMaze::drawRelativePaths() {
         cell.setPosition(col * CELL_SIZE, row * CELL_SIZE);
         cell.setFillColor(sf::Color(200, 200, 200));  // 浅灰色
         window.draw(cell);
-        
+
         // 记录数字和颜色
-        cellNumbers[{row, col}].push_back({counter++, sf::Color(100, 100, 100)});  // 深灰色数字
+        cellNumbers[{row, col}].push_back({ counter++, sf::Color(100, 100, 100) });  // 深灰色数字
     }
 
     counter = 1;  // 重置计数器
@@ -352,9 +358,9 @@ void VirtualMaze::drawRelativePaths() {
         cell.setPosition(col * CELL_SIZE, row * CELL_SIZE);
         cell.setFillColor(sf::Color::Blue);
         window.draw(cell);
-        
+
         // 记录数字和颜色
-        cellNumbers[{row, col}].push_back({counter++, sf::Color::Blue});
+        cellNumbers[{row, col}].push_back({ counter++, sf::Color::Blue });
     }
 
     counter = 1;  // 重置计数器
@@ -366,9 +372,9 @@ void VirtualMaze::drawRelativePaths() {
         cell.setPosition(col * CELL_SIZE, row * CELL_SIZE);
         cell.setFillColor(sf::Color::Green);
         window.draw(cell);
-        
+
         // 记录数字和颜色
-        cellNumbers[{row, col}].push_back({counter++, sf::Color::Green});
+        cellNumbers[{row, col}].push_back({ counter++, sf::Color::Green });
     }
 
     // 绘制起点和终点（红色）
@@ -391,19 +397,19 @@ void VirtualMaze::drawRelativePaths() {
                 text += ",";
             }
         }
-        
+
         sf::Text numberText;
         numberText.setFont(font);
         numberText.setString(text);
         numberText.setCharacterSize(12);
         numberText.setFillColor(sf::Color::Black);  // 统一使用黑色显示数字
-        
+
         // 计算文本位置（居中）
         sf::FloatRect textBounds = numberText.getLocalBounds();
         float x = pos.second * CELL_SIZE + (CELL_SIZE - textBounds.width) / 2;
         float y = pos.first * CELL_SIZE + (CELL_SIZE - textBounds.height) / 2;
         numberText.setPosition(x, y);
-        
+
         window.draw(numberText);
     }
 }
@@ -412,7 +418,7 @@ void VirtualMaze::setPath(const std::vector<int>& path) {
     calculateRelativePath(path);
 }
 
-// 窗口显示，添加点击下一关的按钮
+// 窗口显示，添加点击下一关的按钮和玩家交互
 void VirtualMaze::display() {
     while (window.isOpen()) {
         sf::Event event;
@@ -430,9 +436,31 @@ void VirtualMaze::display() {
                     }
                 }
             }
+            else if (playerInteractionEnabled && event.type == sf::Event::KeyPressed) {
+                handleKeyPress(event.key.code);
+
+                // 检查是否到达终点
+                if (playerPosition.first == virtualSize - 2 && playerPosition.second == virtualSize - 2) {
+                    std::cout << "恭喜！你到达了终点！" << std::endl;
+                    // 更新玩家格子颜色
+                    updatePlayerCell();
+                }
+            }
         }
 
+        //迷宫是一定要画的
         drawMaze();
+
+        if (playerInteractionEnabled) {
+            // 如果启用了玩家交互，绘制迷宫并在上面绘制玩家
+            drawMaze();
+            drawPlayer();
+        }
+        else {
+            // 否则只绘制迷宫
+            drawMaze();
+        }
+
         window.display();
     }
 }
@@ -457,3 +485,4 @@ void VirtualMaze::highlightPath(const std::vector<int>& path) {
     window.display();
 }
 */
+
