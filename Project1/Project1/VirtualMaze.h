@@ -40,14 +40,22 @@ private:
     sf::Color playerColor;  // 玩家颜色
     std::pair<int, int> lastPlayerPosition;  // 玩家上一个位置
 
+    // 单人模式计时器相关
+    sf::Clock gameClock;          // 游戏计时器
+    sf::Text timerText;           // 计时器显示文本
+    bool isTimerRunning;          // 计时器是否正在运行
+    float elapsedTime;            // 已经过的时间（秒）
+
     // 物理坐标到虚拟坐标的映射
     int physicalToVirtual(int physicalRow, int physicalCol) const;
     // !物理路径到虚拟路径的转换（考虑中间连接点），新加的, 传入物理最短路径，返回虚拟最短路径
     void convertToVirtualPath(const std::vector<int>& physicalPath);
     // 连接两个物理格子之间的虚拟路径
     void connectPhysicalCells(int cell1, int cell2);
-    // 绘制迷宫
+    // 绘制双人模式的迷宫
     void drawMaze();
+    // 绘制单人模式的地图
+    void drawSingleMap();
     // 绘制按钮
     void drawButton();
     // 检查点击是否在按钮上
@@ -67,8 +75,10 @@ public:
     VirtualMaze(int physicalSize);
     // 从物理迷宫构建虚拟迷宫
     void buildFromPhysical(const PhysicalMaze& physicalMaze);
-    // 显示迷宫
+    // 显示双人模式的迷宫
     void display();
+    // 显示单人模式的地图
+    void displaySingle();
     // 设置路径
     void setPath(const std::vector<int>& path);
     // 启用玩家互动

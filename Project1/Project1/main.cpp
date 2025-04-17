@@ -49,15 +49,21 @@ int main() {
         PhysicalMaze physicalMaze(size);
         physicalMaze.generateMaze(size);
 
+        // 寻找最短路径
+        physicalMaze.findPath(size);
+
         // 创建虚拟迷宫并从物理迷宫构建
         VirtualMaze virtualMaze(size);
         virtualMaze.buildFromPhysical(physicalMaze);
+
+        // 设置路径（用于相对路径显示）
+        virtualMaze.setPath(physicalMaze.getPath());
 
         // 启用玩家交互
         virtualMaze.enablePlayerInteraction();
 
         // 显示迷宫
-        virtualMaze.display();
+        virtualMaze.displaySingle();
         break;
     }
 

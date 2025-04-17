@@ -3,7 +3,7 @@
 #include <string>   // 为std::string
 #include <utility>  // 为std::pair
 
-VirtualMaze::VirtualMaze(int physicalSize) : size(physicalSize), showRelativePaths(false), playerInteractionEnabled(false) {
+VirtualMaze::VirtualMaze(int physicalSize) : size(physicalSize), showRelativePaths(false), playerInteractionEnabled(false), isTimerRunning(false), elapsedTime(0.0f) {
     virtualSize = 2 * size + 1;
     // 初始化虚拟迷宫，全部置为墙（0）
     maze.resize(virtualSize, std::vector<int>(virtualSize, 0));
@@ -42,6 +42,16 @@ VirtualMaze::VirtualMaze(int physicalSize) : size(physicalSize), showRelativePat
     buttonText.setPosition(
         button.getPosition().x + (button.getSize().x - textBounds.width) / 2,
         button.getPosition().y + (button.getSize().y - textBounds.height) / 2
+    );
+    
+    // 初始化计时器文本
+    timerText.setFont(font);
+    timerText.setString("00:00");
+    timerText.setCharacterSize(24);
+    timerText.setFillColor(sf::Color::Black);
+    timerText.setPosition(
+        (virtualSize * CELL_SIZE - timerText.getLocalBounds().width) / 2, 
+        10.0f  // 位于界面上方10像素处
     );
 }
 
@@ -145,6 +155,8 @@ void VirtualMaze::drawMaze() {
         drawRelativePaths();
     }
 }
+
+
 
 // ! 物理路径到虚拟路径的转换（考虑中间连接点）,接下来要修改这个函数，处理最短路径从物理到虚拟图层的连接问题
 // !只专注于解决最短路径
@@ -464,6 +476,86 @@ void VirtualMaze::display() {
         window.display();
     }
 }
+
+// 显示单人模式的地图
+void VirtualMaze::displaySingle(){
+    // 重置计时器
+    gameClock.restart();
+    isTimerRunning = true;
+    elapsedTime = 0.0f;
+    
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+            
+            else if (playerInteractionEnabled && event.type == sf::Event::KeyPressed) {
+                handleKeyPress(event.key.code);
+
+                // !检查是否到达终点，但是这个终点值需要重新计算，根据生成迷宫的最短路径的中点
+                if (playerPosition.first == virtualSize - 2 && playerPosition.second == virtualSize - 2) {
+                    std::cout << "Congratulations! You win!" << std::endl;
+                    // !停止计时器
+                    isTimerRunning = false;
+                    // 更新玩家格子颜色
+                    updatePlayerCell();
+                }
+            }
+        }
+
+        // 更新计时器
+        if (isTimerRunning) {
+            elapsedTime = gameClock.getElapsedTime().asSeconds();
+            
+            // 格式化时间为 MM:SS
+            int minutes = static_cast<int>(elapsedTime) / 60;
+            int seconds = static_cast<int>(elapsedTime) % 60;
+            
+            // 更新计时器文本
+            std::string timeString = 
+                (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" + 
+                (seconds < 10 ? "0" : "") + std::to_string(seconds);
+            timerText.setString(timeString);
+            
+            // 更新文本位置（保持居中）
+            sf::FloatRect textBounds = timerText.getLocalBounds();
+            timerText.setPosition(
+                (virtualSize * CELL_SIZE - textBounds.width) / 2,
+                10.0f
+            );
+        }
+
+        //迷宫是一定要画的
+        drawSingleMap();
+
+        if (playerInteractionEnabled) {
+            // 如果启用了玩家交互，绘制迷宫并在上面绘制玩家
+            //drawMaze();
+            drawPlayer();
+        }
+        else {
+            // 否则只绘制迷宫
+            //drawMaze();
+        }
+        
+        // 绘制计时器
+        window.draw(timerText);
+
+        window.display();
+    }
+}
+
+//画的只是单人模式的地图，没有玩家，
+void VirtualMaze::drawSingleMap() {
+    window.clear(sf::Color::White);
+    showRelativePaths = true;
+    //单人模式的本质就是直接只画相对路径，不需要走迷宫的步骤
+    drawRelativePaths();    
+}
+
+
 
 // 高亮显示路径，无改动，但是在新旧代码中都不知道是干什么的
 /*
