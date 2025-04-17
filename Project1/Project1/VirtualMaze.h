@@ -83,6 +83,8 @@ public:
     void setPath(const std::vector<int>& path);
     // 启用玩家互动
     void enablePlayerInteraction();
+    // 获取游戏时间
+    float getElapsedTime() const { return elapsedTime; }
 };
 
 #endif // VIRTUAL_MAZE_H

@@ -121,9 +121,9 @@ void MainScene::initButtons() {
         });
 
     loginButton.setCallback([this]() {
-        // 登录功能待实现
-        std::cout << "login button is clicked" << std::endl;
-        });
+        // 设置状态为登录页面
+        currentState = SceneState::LOGIN;
+    });
 
     leaderboardButton.setCallback([this]() {
         currentState = SceneState::LEADERBOARD;

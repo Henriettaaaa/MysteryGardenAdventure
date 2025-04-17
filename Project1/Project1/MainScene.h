@@ -42,6 +42,7 @@ public:
         SINGLE_PLAYER,
         MULTI_PLAYER,
         LEADERBOARD,
+        LOGIN,
         EXIT
     };
 

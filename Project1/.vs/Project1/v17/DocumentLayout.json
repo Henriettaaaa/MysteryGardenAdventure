@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "D:\\AAAA\\Project1_v4_\u5355\u4EBA\u8D70\u8FF7\u5BAB\u4EA4\u4E92\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|D:\\AAAA\\Project1_v4_\u5355\u4EBA\u8D70\u8FF7\u5BAB\u4EA4\u4E92\\Project1\\Leaderboard.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|solutionrelative:Project1\\Leaderboard.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|D:\\AAAA\\Project1_v4_\u5355\u4EBA\u8D70\u8FF7\u5BAB\u4EA4\u4E92\\Project1\\UserManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|solutionrelative:Project1\\UserManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|D:\\AAAA\\Project1_v4_\u5355\u4EBA\u8D70\u8FF7\u5BAB\u4EA4\u4E92\\Project1\\VirtualMaze.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{24AEAAFD-59E6-47BC-91C7-83736C688B65}|Project1\\Project1.vcxproj|solutionrelative:Project1\\VirtualMaze.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
@@ -42,7 +50,33 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
+              "Title": "UserManager.cpp",
+              "DocumentMoniker": "D:\\AAAA\\Project1_v4_\u5355\u4EBA\u8D70\u8FF7\u5BAB\u4EA4\u4E92\\Project1\\UserManager.cpp",
+              "RelativeDocumentMoniker": "Project1\\UserManager.cpp",
+              "ToolTip": "D:\\AAAA\\Project1_v4_\u5355\u4EBA\u8D70\u8FF7\u5BAB\u4EA4\u4E92\\Project1\\UserManager.cpp",
+              "RelativeToolTip": "Project1\\UserManager.cpp",
+              "ViewState": "AQIAAPQAAAAAAAAAAAAwwP4AAABAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-04-15T13:03:39.241Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Leaderboard.cpp",
+              "DocumentMoniker": "D:\\AAAA\\Project1_v4_\u5355\u4EBA\u8D70\u8FF7\u5BAB\u4EA4\u4E92\\Project1\\Leaderboard.cpp",
+              "RelativeDocumentMoniker": "Project1\\Leaderboard.cpp",
+              "ToolTip": "D:\\AAAA\\Project1_v4_\u5355\u4EBA\u8D70\u8FF7\u5BAB\u4EA4\u4E92\\Project1\\Leaderboard.cpp",
+              "RelativeToolTip": "Project1\\Leaderboard.cpp",
+              "ViewState": "AQIAABIAAAAAAAAAAAAwwBkAAAAJAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-04-15T12:38:38.417Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "MainScene.h",
               "DocumentMoniker": "D:\\AAAA\\Project1_v4_\u5355\u4EBA\u8D70\u8FF7\u5BAB\u4EA4\u4E92\\Project1\\MainScene.h",
               "RelativeDocumentMoniker": "Project1\\MainScene.h",
@@ -54,20 +88,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "VirtualMaze.h",
               "DocumentMoniker": "D:\\AAAA\\Project1_v4_\u5355\u4EBA\u8D70\u8FF7\u5BAB\u4EA4\u4E92\\Project1\\VirtualMaze.h",
               "RelativeDocumentMoniker": "Project1\\VirtualMaze.h",
               "ToolTip": "D:\\AAAA\\Project1_v4_\u5355\u4EBA\u8D70\u8FF7\u5BAB\u4EA4\u4E92\\Project1\\VirtualMaze.h",
               "RelativeToolTip": "Project1\\VirtualMaze.h",
-              "ViewState": "AQIAACYAAAAAAAAAAAAowC8AAAAAAAAA",
+              "ViewState": "AQIAACYAAAAAAAAAAAAowCkAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-04-03T14:33:14.667Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-03T14:33:14.667Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 8,
               "Title": "PhysicalMaze.h",
               "DocumentMoniker": "D:\\AAAA\\Project1_v4_\u5355\u4EBA\u8D70\u8FF7\u5BAB\u4EA4\u4E92\\Project1\\PhysicalMaze.h",
               "RelativeDocumentMoniker": "Project1\\PhysicalMaze.h",
@@ -79,7 +112,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "VirtualMaze.cpp",
               "DocumentMoniker": "D:\\AAAA\\Project1_v4_\u5355\u4EBA\u8D70\u8FF7\u5BAB\u4EA4\u4E92\\Project1\\VirtualMaze.cpp",
               "RelativeDocumentMoniker": "Project1\\VirtualMaze.cpp",
@@ -87,12 +120,11 @@
               "RelativeToolTip": "Project1\\VirtualMaze.cpp",
               "ViewState": "AQIAAO4BAAAAAAAAAAAowOMBAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-04-03T14:32:36.065Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-03T14:32:36.065Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "PhysicalMaze.cpp",
               "DocumentMoniker": "D:\\AAAA\\Project1_v4_\u5355\u4EBA\u8D70\u8FF7\u5BAB\u4EA4\u4E92\\Project1\\PhysicalMaze.cpp",
               "RelativeDocumentMoniker": "Project1\\PhysicalMaze.cpp",
@@ -104,7 +136,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "main.cpp",
               "DocumentMoniker": "D:\\AAAA\\Project1_v4_\u5355\u4EBA\u8D70\u8FF7\u5BAB\u4EA4\u4E92\\Project1\\main.cpp",
               "RelativeDocumentMoniker": "Project1\\main.cpp",
@@ -116,7 +148,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 7,
               "Title": "MainScene.cpp",
               "DocumentMoniker": "D:\\AAAA\\Project1_v4_\u5355\u4EBA\u8D70\u8FF7\u5BAB\u4EA4\u4E92\\Project1\\MainScene.cpp",
               "RelativeDocumentMoniker": "Project1\\MainScene.cpp",

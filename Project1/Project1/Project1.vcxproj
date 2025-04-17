@@ -137,15 +137,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Leaderboard.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainScene.cpp" />
     <ClCompile Include="PhysicalMaze.cpp" />
     <ClCompile Include="player_multi.cpp" />
+    <ClCompile Include="UserManager.cpp" />
     <ClCompile Include="VirtualMaze.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Leaderboard.h" />
     <ClInclude Include="MainScene.h" />
     <ClInclude Include="PhysicalMaze.h" />
+    <ClInclude Include="UserManager.h" />
     <ClInclude Include="VirtualMaze.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
