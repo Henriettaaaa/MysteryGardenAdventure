@@ -14,9 +14,12 @@ VirtualMaze::VirtualMaze(int physicalSize) : size(physicalSize), showRelativePat
     window.setFramerateLimit(60);
 
     // 初始化玩家位置和颜色
-    playerPosition = { 1, 1 };  // 起点位置（虚拟坐标）
-    lastPlayerPosition = { 1, 1 };  // 初始时与当前位置相同
-    playerColor = sf::Color(255, 165, 0);  // 橙色
+    playerPositionA = { 1, 1 };  // 起点位置（虚拟坐标）
+    lastPlayerPositionA = { 1, 1 };  // 初始时与当前位置相同
+    playerColorA = sf::Color(255, 165, 0);  // 橙色
+    playerPositionB = { virtualSize - 2, virtualSize - 2 };  // 终点位置（虚拟坐标）
+    lastPlayerPositionB = { virtualSize - 2, virtualSize - 2 };  // 初始时与当前位置相同
+    playerColorB = sf::Color(0, 0, 255);  // 蓝色
 
     // 初始化按钮
     button.setSize(sf::Vector2f(200, 50));
@@ -268,27 +271,34 @@ void VirtualMaze::calculateRelativePath(const std::vector<int>& physicalPath) {
     }
     */
     int A = 1, B = absolutePath.size() - 2;  //头尾两个指针，分别同时走A和B的路径
+    int moveB = virtualSize * (virtualSize - 1) - 2;  //B的初始位置(虚拟坐标的序号
+    int moveA = virtualSize + 1;
+    std::cout << moveA << std::endl;
     while (A <= B) {  //还没相遇时
-        int moveRowA = (absolutePath[A] - absolutePath[A - 1]) / size;  //A绝对移动的行数
-        int moveColA = (absolutePath[A] - absolutePath[A - 1]) % size;  //A绝对移动的列数
-        int moveRowB = (absolutePath[B] - absolutePath[B + 1]) / size;  //B绝对移动的行数
-        int moveColB = (absolutePath[B] - absolutePath[B + 1]) % size;  //B绝对移动的列数
+        std::cout << absolutePath[A] << " " << absolutePath[A - 1] << std::endl;
+        std::cout << absolutePath[B] << " " << absolutePath[B + 1] << std::endl;
+        int moveRowA = (absolutePath[A] - absolutePath[A - 1]) / virtualSize;  //A绝对移动的行数
+        int moveColA = (absolutePath[A] - absolutePath[A - 1]) % virtualSize;  //A绝对移动的列数
+        int moveRowB = (absolutePath[B] - absolutePath[B + 1]) / virtualSize;  //B绝对移动的行数
+        int moveColB = (absolutePath[B] - absolutePath[B + 1]) % virtualSize;  //B绝对移动的列数
 
-        //物理层相对移动一格，相当于虚拟层相对移动两格
+        //物理层相对移动一格，相当于虚拟层相对移动两格,而且移动是相对上一个相对格子，而不是绝对格子
         //以A为参考，B的移动
-        std::pair<int, int> releB = std::make_pair(absolutePath[B + 1] / size + moveRowB - moveRowA,
-            absolutePath[B + 1] % size + moveColB - moveColA);
+         //初始的相对移动的格子是相对于起点，后面的都是相对于前一个相对格子
+        std::pair<int, int> releB = std::make_pair(moveB / virtualSize + moveRowB - moveRowA,
+            moveB % virtualSize + moveColB - moveColA);
         //存的还是物理坐标
-        int moveB = releB.first * size + releB.second;
+        moveB = releB.first * virtualSize + releB.second;
         relativePathB.push_back(moveB);
+        
 
         //以B为参考，A的移动
-        std::pair<int, int> releA = std::make_pair(absolutePath[A - 1] / size + moveRowA - moveRowB,
-            absolutePath[A - 1] % size + moveColA - moveColB);
+        std::pair<int, int> releA = std::make_pair(moveA / virtualSize + moveRowA - moveRowB,
+            moveA % virtualSize + moveColA - moveColB);
         //存的还是物理坐标
-        int moveA = releA.first * size + releA.second;
+        moveA = releA.first * virtualSize + releA.second;
         relativePathA.push_back(moveA);
-
+        std::cout << "relative" << A << " " << moveA << std::endl;
         //更新A和B，A往前走，B往后走
         A++;
         B--;
@@ -449,13 +459,26 @@ void VirtualMaze::display() {
                 }
             }
             else if (playerInteractionEnabled && event.type == sf::Event::KeyPressed) {
-                handleKeyPress(event.key.code);
+                handleKeyPressA(event.key.code);
+                handleKeyPressB(event.key.code);
 
                 // 检查是否到达终点
-                if (playerPosition.first == virtualSize - 2 && playerPosition.second == virtualSize - 2) {
-                    std::cout << "恭喜！你到达了终点！" << std::endl;
+                if (playerPositionA.first == virtualSize - 2 && playerPositionA.second == virtualSize - 2) {
+                    std::cout << "you finish" << std::endl;
                     // 更新玩家格子颜色
-                    updatePlayerCell();
+                    updatePlayerCellA();
+                }
+                if (playerPositionB.first == virtualSize - 2 && playerPositionB.second == virtualSize - 2) {
+                    std::cout << "You finish" << std::endl;
+                    // 更新玩家格子颜色
+                    updatePlayerCellB();
+                }
+                //碰撞检测
+                if (playerPositionA == playerPositionB) {
+                    std::cout << "We meet" << std::endl;
+                    // 更新玩家格子颜色
+                    updatePlayerCellA();
+                    updatePlayerCellB();
                 }
             }
         }
@@ -465,13 +488,11 @@ void VirtualMaze::display() {
 
         if (playerInteractionEnabled) {
             // 如果启用了玩家交互，绘制迷宫并在上面绘制玩家
-            drawMaze();
-            drawPlayer();
+            //drawMaze();
+            drawPlayerA();
+            drawPlayerB();
         }
-        else {
-            // 否则只绘制迷宫
-            drawMaze();
-        }
+        
 
         window.display();
     }
@@ -492,15 +513,15 @@ void VirtualMaze::displaySingle(){
             }
             
             else if (playerInteractionEnabled && event.type == sf::Event::KeyPressed) {
-                handleKeyPress(event.key.code);
+                handleKeyPressA(event.key.code);
 
                 // !检查是否到达终点，但是这个终点值需要重新计算，根据生成迷宫的最短路径的中点
-                if (playerPosition.first == virtualSize - 2 && playerPosition.second == virtualSize - 2) {
+                if (playerPositionA.first == virtualSize - 2 && playerPositionA.second == virtualSize - 2) {
                     std::cout << "Congratulations! You win!" << std::endl;
                     // !停止计时器
                     isTimerRunning = false;
                     // 更新玩家格子颜色
-                    updatePlayerCell();
+                    updatePlayerCellA();
                 }
             }
         }
@@ -533,12 +554,9 @@ void VirtualMaze::displaySingle(){
         if (playerInteractionEnabled) {
             // 如果启用了玩家交互，绘制迷宫并在上面绘制玩家
             //drawMaze();
-            drawPlayer();
+            drawPlayerA();
         }
-        else {
-            // 否则只绘制迷宫
-            //drawMaze();
-        }
+        
         
         // 绘制计时器
         window.draw(timerText);

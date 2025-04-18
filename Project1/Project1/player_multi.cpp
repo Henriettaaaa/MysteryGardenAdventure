@@ -14,39 +14,76 @@ void VirtualMaze::enableSinglePlayerMode() {
 */
 // 走迷宫模式下，处理按键事件，控制方块的移动
 // 传入方向按键，更新玩家位置
-void VirtualMaze::handleKeyPress(sf::Keyboard::Key key) {
+void VirtualMaze::handleKeyPressA(sf::Keyboard::Key key) {
     // 保存当前位置作为上一个位置
-    lastPlayerPosition = playerPosition;
+    lastPlayerPositionA = playerPositionA;
     
     // 保存当前位置
-    std::pair<int, int> newPosition = playerPosition;
+    std::pair<int, int> newPositionA = playerPositionA;
     
     // 根据按键更新位置
     switch (key) {
         case sf::Keyboard::Up:
-            newPosition.first--;
+            newPositionA.first--;
             break;
         case sf::Keyboard::Down:
-            newPosition.first++;
+            newPositionA.first++;
             break;
         case sf::Keyboard::Left:
-            newPosition.second--;
+            newPositionA.second--;
             break;
         case sf::Keyboard::Right:
-            newPosition.second++;
+            newPositionA.second++;
             break;
         default:
             return;  // 忽略其他键
     }
     
     // 检查新位置是否合法
-    if (canMoveTo(newPosition.first, newPosition.second)) {
-        playerPosition = newPosition;
+    if (canMoveTo(newPositionA.first, newPositionA.second)) {
+        playerPositionA = newPositionA;
         
         //如果合法
         // 检查是否到达终点
-        if (playerPosition.first == virtualSize - 2 && playerPosition.second == virtualSize - 2) {
-            std::cout << "恭喜！你到达了终点！" << std::endl;
+        if (playerPositionA.first == virtualSize - 2 && playerPositionA.second == virtualSize - 2) {
+            std::cout << "You win!" << std::endl;
+        }
+    }
+}
+
+void VirtualMaze::handleKeyPressB(sf::Keyboard::Key key) {
+    // 保存当前位置作为上一个位置
+    lastPlayerPositionB = playerPositionB;
+    
+    // 保存当前位置
+    std::pair<int, int> newPositionB = playerPositionB;
+    
+    // 根据WASD按键更新位置
+    switch (key) {
+        case sf::Keyboard::W:
+            newPositionB.first--;
+            break;
+        case sf::Keyboard::S:
+            newPositionB.first++;
+            break;
+        case sf::Keyboard::A:
+            newPositionB.second--;
+            break;
+        case sf::Keyboard::D:
+            newPositionB.second++;
+            break;
+        default:
+            return;  // 忽略其他键
+    }
+    
+    // 检查新位置是否合法
+    if (canMoveTo(newPositionB.first, newPositionB.second)) {
+        playerPositionB = newPositionB;
+        
+        //如果合法
+        // 检查是否到达终点
+        if (playerPositionB.first == virtualSize - 2 && playerPositionB.second == virtualSize - 2) {
+            std::cout << "You win!" << std::endl;
         }
     }
 }
@@ -64,13 +101,19 @@ bool VirtualMaze::canMoveTo(int newRow, int newCol) const {
 }
 
 // 绘制玩家位置（迷宫在drawMaze()中已经绘制）
-void VirtualMaze::drawPlayer() {
+void VirtualMaze::drawPlayerA() {
     sf::RectangleShape playerCell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-    playerCell.setPosition(playerPosition.second * CELL_SIZE, playerPosition.first * CELL_SIZE);
-    playerCell.setFillColor(playerColor);
+    playerCell.setPosition(playerPositionA.second * CELL_SIZE, playerPositionA.first * CELL_SIZE);
+    playerCell.setFillColor(playerColorA);
     window.draw(playerCell);
 }
 
+void VirtualMaze::drawPlayerB() {
+    sf::RectangleShape playerCell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
+    playerCell.setPosition(playerPositionB.second * CELL_SIZE, playerPositionB.first * CELL_SIZE);
+    playerCell.setFillColor(playerColorB);
+    window.draw(playerCell);
+}
 // 新增：绘制单人模式界面
 // !这是啥玩意，好像重复了
 /*
@@ -137,20 +180,41 @@ void VirtualMaze::displaySinglePlayerMode() {
 // 玩家互动相关函数
 void VirtualMaze::enablePlayerInteraction() {
     playerInteractionEnabled = true;
-    playerPosition = {1, 1};  // 重置玩家位置到起点
-    lastPlayerPosition = {1, 1};  // 初始化上一个位置
+    playerPositionA = {1, 1};  // 重置玩家位置到起点
+    lastPlayerPositionA = {1, 1};  // 初始化上一个位置
+    playerPositionB = {virtualSize - 2, virtualSize - 2};  // 重置玩家位置到终点
+    lastPlayerPositionB = {virtualSize - 2, virtualSize - 2};  // 初始化上一个位置
 }
 
 //传入合法的新位置，重新绘制玩家所在位置
-void VirtualMaze::updatePlayerCell() {
+void VirtualMaze::updatePlayerCellA() {
     // 如果玩家移动了，需要将上一个位置的格子重新绘制为白色
-    if (lastPlayerPosition != playerPosition) {
+    if (lastPlayerPositionA != playerPositionA) {
         sf::RectangleShape lastCell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-        lastCell.setPosition(lastPlayerPosition.second * CELL_SIZE, lastPlayerPosition.first * CELL_SIZE);
+        lastCell.setPosition(lastPlayerPositionA.second * CELL_SIZE, lastPlayerPositionA.first * CELL_SIZE);
         
         // 如果是起点或终点，恢复为红色
-        if ((lastPlayerPosition.first == 1 && lastPlayerPosition.second == 1) || 
-            (lastPlayerPosition.first == virtualSize - 2 && lastPlayerPosition.second == virtualSize - 2)) {
+        if ((lastPlayerPositionA.first == 1 && lastPlayerPositionA.second == 1) || 
+            (lastPlayerPositionA.first == virtualSize - 2 && lastPlayerPositionA.second == virtualSize - 2)) {
+            lastCell.setFillColor(sf::Color::Red);
+        } else {
+            // 否则恢复为路径的白色
+            lastCell.setFillColor(sf::Color::White);
+        }
+        
+        window.draw(lastCell);
+    }
+}
+
+void VirtualMaze::updatePlayerCellB() {
+    // 如果玩家移动了，需要将上一个位置的格子重新绘制为白色
+    if (lastPlayerPositionB != playerPositionB) {
+        sf::RectangleShape lastCell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
+        lastCell.setPosition(lastPlayerPositionB.second * CELL_SIZE, lastPlayerPositionB.first * CELL_SIZE);
+        
+        // 如果是起点或终点，恢复为红色
+        if ((lastPlayerPositionB.first == 1 && lastPlayerPositionB.second == 1) || 
+            (lastPlayerPositionB.first == virtualSize - 2 && lastPlayerPositionB.second == virtualSize - 2)) {
             lastCell.setFillColor(sf::Color::Red);
         } else {
             // 否则恢复为路径的白色

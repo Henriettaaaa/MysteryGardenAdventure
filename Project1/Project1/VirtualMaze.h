@@ -36,9 +36,12 @@ private:
 
     // 玩家互动相关
     bool playerInteractionEnabled;  // 是否启用玩家互动
-    std::pair<int, int> playerPosition;  // 玩家当前位置（虚拟坐标）
-    sf::Color playerColor;  // 玩家颜色
-    std::pair<int, int> lastPlayerPosition;  // 玩家上一个位置
+    std::pair<int, int> playerPositionA;  // 玩家A当前位置（虚拟坐标）
+    std::pair<int, int> playerPositionB;  // 玩家B当前位置（虚拟坐标）
+    sf::Color playerColorA;  // 玩家A颜色
+    sf::Color playerColorB;  // 玩家B颜色
+    std::pair<int, int> lastPlayerPositionA;  // 玩家A上一个位置
+    std::pair<int, int> lastPlayerPositionB;  // 玩家B上一个位置
 
     // 单人模式计时器相关
     sf::Clock gameClock;          // 游戏计时器
@@ -66,10 +69,13 @@ private:
     void calculateRelativePath(const std::vector<int>& physicalPath);
 
     // 玩家互动相关函数
-    void handleKeyPress(sf::Keyboard::Key key);
+    void handleKeyPressA(sf::Keyboard::Key key);
+    void handleKeyPressB(sf::Keyboard::Key key);
     bool canMoveTo(int newRow, int newCol) const;
-    void drawPlayer();
-    void updatePlayerCell();
+    void drawPlayerA();
+    void drawPlayerB();
+    void updatePlayerCellA();
+    void updatePlayerCellB();
 
 public:
     VirtualMaze(int physicalSize);
