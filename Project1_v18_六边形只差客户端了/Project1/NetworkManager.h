@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <atomic>
 #include <functional>
+#include <future>
 #include "SingleHex.h"
 
 // 消息类型
@@ -39,7 +40,8 @@ public:
     // 发送网格数据
     bool sendGridData(const std::unordered_map<HexCoord, CellState>& gridData, 
                      const HexCoord& startHex, 
-                     const HexCoord& endHex);
+                     const HexCoord& endHex,
+                     int radius);
     
     // 发送玩家位置
     bool sendPlayerPosition(const HexCoord& pos);
@@ -63,7 +65,8 @@ public:
     bool deserializeGridData(const std::vector<uint8_t>& data, 
                             std::unordered_map<HexCoord, CellState>& gridData, 
                             HexCoord& startHex, 
-                            HexCoord& endHex);
+                            HexCoord& endHex,
+                            int& radius);
 
     // 新增：反序列化格子标号数据
     void deserializeGridNumbers(const std::vector<uint8_t>& data,
@@ -72,7 +75,8 @@ public:
     // 新增：接收数据的回调函数
     using GridDataCallback = std::function<void(const std::unordered_map<HexCoord, CellState>&, 
                                              const HexCoord&, 
-                                             const HexCoord&)>;
+                                             const HexCoord&,
+                                             int)>;
     using PlayerPositionCallback = std::function<void(const HexCoord&)>;
     using GameStateCallback = std::function<void(bool, float, bool)>;
     using GridNumbersCallback = std::function<void(const std::unordered_map<HexCoord, std::vector<int>>&)>; // 添加格子标号回调
@@ -119,7 +123,8 @@ private:
     // 序列化和反序列化函数
     std::vector<uint8_t> serializeGridData(const std::unordered_map<HexCoord, CellState>& gridData, 
                                             const HexCoord& startHex, 
-                                            const HexCoord& endHex);
+                                            const HexCoord& endHex,
+                                            int radius);
     
     // 新增：序列化格子标号数据
     std::vector<uint8_t> serializeGridNumbers(const std::unordered_map<HexCoord, std::vector<int>>& gridNumbers);

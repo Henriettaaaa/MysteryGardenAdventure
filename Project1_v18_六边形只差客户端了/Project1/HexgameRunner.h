@@ -3,6 +3,9 @@
 
 #include <string>
 
+// 前向声明
+class UserManager;
+
 // 界面选择模式结果
 struct ModeSelection {
 bool valid = false;
@@ -15,7 +18,7 @@ unsigned short port = 54000;
 ModeSelection selectGameMode();
 
 // 声明真正运行游戏逻辑的函数
-// （如果不需要 argc/argv，可改成 int Hexgame_run() 也行）
-int Hexgame_run(int argc, char* argv[]);
+// 新增：接受UserManager参数
+int Hexgame_run(int argc, char* argv[], UserManager* userManager = nullptr);
 
 #endif // HEXGAMERUNNER_H

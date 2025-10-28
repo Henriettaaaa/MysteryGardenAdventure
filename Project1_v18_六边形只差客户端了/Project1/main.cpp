@@ -49,6 +49,7 @@ int main() {
             // 第二阶段会在displayMultiPlayer内部触发，检测到玩家相遇后自动跳转到displayRelativeMaze
             
             // 游戏结束后，重置主界面状态，准备下一次循环
+            //更新排行榜
             mainScene.resetState();
             break;
         }
@@ -113,7 +114,7 @@ int main() {
 
         case MainScene::SceneState::SINGLE_PLAYER_HEX: {
             // 双人六边形局域网联网实现
-            Hexgame_run(0, nullptr);
+            Hexgame_run(0, nullptr, &userManager);
             
             // 重置状态
             mainScene.resetState();

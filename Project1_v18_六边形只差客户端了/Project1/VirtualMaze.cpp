@@ -1,7 +1,11 @@
 #include "VirtualMaze.h"
+#include "UserManager.h"
 #include <iostream>
 #include <string>   // 为std::string
 #include <utility>  // 为std::pair
+
+// 外部用户管理器引用
+extern UserManager userManager;
 
 namespace {
     bool g_playerWon = false;
@@ -1347,10 +1351,43 @@ void VirtualMaze::displayRelativeMaze() {
             // 添加倒计时逻辑
             static sf::Clock victoryTimer;
             static bool timerStarted = false;
+            static bool statisticsRecorded = false;  // 添加统计记录标志
             
             if (!timerStarted) {
                 victoryTimer.restart(); // 重置计时器
                 timerStarted = true;    // 标记计时器已启动
+            }
+            
+            // 一次性记录统计数据
+            if (!statisticsRecorded && userManager.isUserLoggedIn()) {
+                // 根据迷宫大小映射到难度
+                Difficulty diff;
+                if (size == 5) diff = Difficulty::EASY;
+                else if (size == 7) diff = Difficulty::MEDIUM;
+                else if (size == 9) diff = Difficulty::HARD;
+                else diff = Difficulty::MEDIUM; // 默认中等难度
+                
+                if (playerAWon && playerBWon) {
+                    // 平局情况 - 按败北处理
+                    userManager.updateMultiSquareGameResult(diff, false);
+                    std::cout << "Game ended in a tie. Logged user result recorded as loss. Difficulty: " << 
+                        (diff == Difficulty::EASY ? "Easy" : 
+                         diff == Difficulty::MEDIUM ? "Medium" : "Hard") << std::endl;
+                } else if (playerAWon) {
+                    // 玩家A（登录用户）获胜
+                    userManager.updateMultiSquareGameResult(diff, true);
+                    std::cout << "Player A (logged user) wins! Difficulty: " << 
+                        (diff == Difficulty::EASY ? "Easy" : 
+                         diff == Difficulty::MEDIUM ? "Medium" : "Hard") << std::endl;
+                } else if (playerBWon) {
+                    // 玩家B获胜，玩家A（登录用户）败北
+                    userManager.updateMultiSquareGameResult(diff, false);
+                    std::cout << "Player B wins! Player A (logged user) loses. Difficulty: " << 
+                        (diff == Difficulty::EASY ? "Easy" : 
+                         diff == Difficulty::MEDIUM ? "Medium" : "Hard") << std::endl;
+                }
+                
+                statisticsRecorded = true; // 标记统计已记录
             }
             
             // 显示倒计时文本
@@ -1374,6 +1411,7 @@ void VirtualMaze::displayRelativeMaze() {
             // 检查是否已经过了3秒
             if (victoryTimer.getElapsedTime().asSeconds() >= 3.0f) {
                 timerStarted = false;   // 重置标志以便下次使用
+                statisticsRecorded = false; // 重置统计标志以便下次使用
                 window.close();         // 关闭游戏窗口
                 return;                 // 退出函数，返回到main函数
             }

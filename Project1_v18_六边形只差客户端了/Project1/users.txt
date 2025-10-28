@@ -2,9 +2,11 @@
 password=1111
 single_square_time:easy:92.1842
 single_square_time:medium:63.3376
+multi_square_stats:medium:1:1
 
 [song]
 password=0000
 single_square_time:easy:46.9134
 single_square_time:medium:49.2027
+multi_square_stats:easy:2:3
 

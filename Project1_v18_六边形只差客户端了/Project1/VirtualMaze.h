@@ -10,6 +10,10 @@
 #include <utility>
 #include <string>
 
+// 前向声明
+class UserManager;
+enum class Difficulty;
+
 //虚拟迷宫的底层是二维数组，用横纵坐标确定位置
 class VirtualMaze {
 private:

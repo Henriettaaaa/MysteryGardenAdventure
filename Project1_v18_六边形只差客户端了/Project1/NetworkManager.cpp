@@ -386,10 +386,11 @@ void NetworkManager::handleMessageCallback(const NetworkMessage& msg) {
             if (gridDataCallback) {
                 std::unordered_map<HexCoord, CellState> gridData;
                 HexCoord startHex, endHex;
-                if (deserializeGridData(msg.data, gridData, startHex, endHex)) {
+                int radius;
+                if (deserializeGridData(msg.data, gridData, startHex, endHex, radius)) {
                     std::cout << "Processing grid data, start: (" << startHex.q << "," << startHex.r 
-                              << "), end: (" << endHex.q << "," << endHex.r << ")" << std::endl;
-                    gridDataCallback(gridData, startHex, endHex);
+                              << "), end: (" << endHex.q << "," << endHex.r << "), radius: " << radius << std::endl;
+                    gridDataCallback(gridData, startHex, endHex, radius);
                 } else {
                     std::cout << "Grid data deserialization failed" << std::endl;
                 }
@@ -483,8 +484,9 @@ void NetworkManager::handleMessageCallback(const NetworkMessage& msg) {
 
 bool NetworkManager::sendGridData(const std::unordered_map<HexCoord, CellState>& gridData, 
                                 const HexCoord& startHex, 
-                                const HexCoord& endHex) {
-    std::vector<uint8_t> serializedData = serializeGridData(gridData, startHex, endHex);
+                                const HexCoord& endHex,
+                                int radius) {
+    std::vector<uint8_t> serializedData = serializeGridData(gridData, startHex, endHex, radius);
     
     sf::Packet packet;
     packet << static_cast<sf::Uint8>(MessageType::GridData);
@@ -696,26 +698,85 @@ bool NetworkManager::receiveMessage(NetworkMessage& msg) {
 }
 
 void NetworkManager::close() {
+    std::cout << "NetworkManager::close() called" << std::endl;
+    
+    // 停止运行标志
     isRunning = false;
+    
+    // 强制关闭socket以中断阻塞的网络操作
+    try {
+        // 先关闭监听器
+        listener.close();
+        std::cout << "Listener closed" << std::endl;
+        
+        // 断开服务器socket连接  
+        if (serverSocket.getRemoteAddress() != sf::IpAddress::None) {
+            std::cout << "Disconnecting server socket..." << std::endl;
+            serverSocket.disconnect();
+        }
+        
+        // 清理客户端连接
+        for (auto& client : clients) {
+            if (client) {
+                client->disconnect();
+            }
+        }
+        clients.clear();
+        std::cout << "Client connections cleared" << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << "Exception while closing sockets: " << e.what() << std::endl;
+    }
+    
+    // 等待网络线程结束（在socket关闭后）
     if (networkThread.joinable()) {
-        networkThread.join();
+        std::cout << "Waiting for network thread to join..." << std::endl;
+        try {
+            // 设置超时，避免无限等待
+            auto future = std::async(std::launch::async, [this]() {
+                this->networkThread.join();
+            });
+            
+            if (future.wait_for(std::chrono::seconds(2)) == std::future_status::timeout) {
+                std::cout << "Network thread join timeout, force terminating..." << std::endl;
+                // 注意：在生产代码中，强制终止线程是危险的，但这里是为了确保主界面不死机
+                // 实际情况下，socket关闭后线程应该能正常结束
+            } else {
+                std::cout << "Network thread joined successfully" << std::endl;
+            }
+        } catch (const std::exception& e) {
+            std::cout << "Exception while joining network thread: " << e.what() << std::endl;
+        }
     }
     
-    for (auto& client : clients) {
-        client->disconnect();
-    }
-    clients.clear();
+    // 重置所有状态，确保单例可以重新使用
+    _isServer = false;
     
-    if (serverSocket.getRemoteAddress() != sf::IpAddress::None) {
-        serverSocket.disconnect();
+    // 清理回调函数
+    playerPositionCallback = nullptr;
+    gridDataCallback = nullptr;
+    gameStateCallback = nullptr;
+    gridNumbersCallback = nullptr;
+    clientConnectedCallback = nullptr;
+    checkpointDataCallback = nullptr;
+    
+    // 清空消息队列
+    try {
+        std::lock_guard<std::mutex> lock(queueMutex);
+        while (!messageQueue.empty()) {
+            messageQueue.pop();
+        }
+        std::cout << "Message queue cleared" << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << "Exception while clearing message queue: " << e.what() << std::endl;
     }
     
-    listener.close();
+    std::cout << "NetworkManager cleanup completed" << std::endl;
 }
 
 std::vector<uint8_t> NetworkManager::serializeGridData(const std::unordered_map<HexCoord, CellState>& gridData,
                                                      const HexCoord& startHex,
-                                                     const HexCoord& endHex) {
+                                                     const HexCoord& endHex,
+                                                     int radius) {
     std::vector<uint8_t> data;
     
     // First serialize start and end hexagons
@@ -736,6 +797,11 @@ std::vector<uint8_t> NetworkManager::serializeGridData(const std::unordered_map<
     data.insert(data.end(),
                reinterpret_cast<uint8_t*>(&endR),
                reinterpret_cast<uint8_t*>(&endR) + sizeof(int));
+    
+    // Serialize radius
+    data.insert(data.end(),
+               reinterpret_cast<uint8_t*>(&radius),
+               reinterpret_cast<uint8_t*>(&radius) + sizeof(int));
     
     // Serialize cell count
     sf::Uint32 gridSize = static_cast<sf::Uint32>(gridData.size());
@@ -768,8 +834,9 @@ std::vector<uint8_t> NetworkManager::serializeGridData(const std::unordered_map<
 bool NetworkManager::deserializeGridData(const std::vector<uint8_t>& data, 
                                      std::unordered_map<HexCoord, CellState>& gridData,
                                      HexCoord& startHex,
-                                     HexCoord& endHex) {
-    if (data.size() < sizeof(int) * 4 + sizeof(sf::Uint32)) {
+                                     HexCoord& endHex,
+                                     int& radius) {
+    if (data.size() < sizeof(int) * 5 + sizeof(sf::Uint32)) {
         return false;
     }
     
@@ -784,6 +851,10 @@ bool NetworkManager::deserializeGridData(const std::vector<uint8_t>& data,
     std::memcpy(&endQ, data.data() + offset, sizeof(int));
     offset += sizeof(int);
     std::memcpy(&endR, data.data() + offset, sizeof(int));
+    offset += sizeof(int);
+    
+    // Deserialize radius
+    std::memcpy(&radius, data.data() + offset, sizeof(int));
     offset += sizeof(int);
     
     startHex = HexCoord(startQ, startR);

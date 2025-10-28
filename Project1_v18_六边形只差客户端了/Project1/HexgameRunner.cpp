@@ -218,7 +218,7 @@ ModeSelection selectGameMode() {
 }
 
 // =============== Hexgame_run 的实现 ===============
-int Hexgame_run(int argc, char* argv[])
+int Hexgame_run(int argc, char* argv[], UserManager* userManager)
 {
 // 使用图形界面选择模式
 ModeSelection mode = selectGameMode();
@@ -229,6 +229,12 @@ return 1;
 
 // 创建并初始化游戏
 HexGame game(mode.isServer, mode.serverIP, mode.port);
+
+// 设置用户管理器
+if (userManager) {
+    game.setUserManager(userManager);
+}
+
 if (!game.initialize()) {
 return 1;
 }

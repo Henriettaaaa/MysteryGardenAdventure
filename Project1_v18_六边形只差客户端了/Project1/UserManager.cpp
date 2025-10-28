@@ -656,4 +656,17 @@ std::map<std::string, std::pair<int, int>> UserManager::getMultiHexStatsLeaderbo
     }
     
     return leaderboard;
+}
+
+void UserManager::forceSaveData()
+{
+    std::cout << "forceSaveData() called - ensuring user data is saved" << std::endl;
+    try {
+        saveUserData();
+        std::cout << "User data force saved successfully" << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << "Error during force save: " << e.what() << std::endl;
+    } catch (...) {
+        std::cout << "Unknown error during force save" << std::endl;
+    }
 } 

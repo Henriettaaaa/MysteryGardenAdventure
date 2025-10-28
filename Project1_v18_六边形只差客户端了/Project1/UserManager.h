@@ -133,6 +133,9 @@ public:
     
     // 退出登录
     void logout();
+    
+    // 强制保存用户数据（用于确保数据完整性）
+    void forceSaveData();
 };
 
 #endif // USER_MANAGER_H

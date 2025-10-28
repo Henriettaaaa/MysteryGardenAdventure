@@ -10,6 +10,10 @@
 #include "SingleHex.h"
 #include "NetworkManager.h"
 
+// 前向声明
+class UserManager;
+enum class Difficulty;
+
 // 游戏状态结构体
 struct GameState {
     std::unordered_map<HexCoord, CellState> gridData;
@@ -34,6 +38,9 @@ struct GameState {
     int serverCheckA;    // 从服务器接收的checkA值
     int serverCheckB;    // 从服务器接收的checkB值
     int serverPathSize;  // 从服务器接收的pathA.size()值
+    
+    // 新增：迷宫半径，用于难度映射
+    int mazeRadius;      // 迷宫半径
 };
 
 // 六边形游戏类
@@ -62,6 +69,9 @@ public:
     
     // 游戏是否运行中
     bool isRunning() const;
+    
+    // 新增：设置用户管理器
+    void setUserManager(UserManager* manager);
 
 private:
     // 初始化游戏状态
@@ -99,4 +109,15 @@ private:
     
     std::string serverIP;            // 服务器IP
     unsigned short port;             // 端口号
+    
+    // 新增：用户管理器引用
+    UserManager* userManager;        // 用户管理器指针
+    
+    // 新增：获胜数据记录标志，防止重复记录
+    bool winDataRecorded;            // 是否已记录获胜数据
+    
+    // 新增：胜利倒计时相关
+    sf::Clock victoryTimer;          // 胜利倒计时器
+    bool victoryTimerStarted;        // 倒计时是否已开始
+    std::string winnerMessage;       // 获胜信息
 }; 

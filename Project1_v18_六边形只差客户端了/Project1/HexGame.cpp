@@ -1,4 +1,6 @@
 #include "HexGame.h"
+#include "UserManager.h"
+#include <future>
 
 // 构造函数
 HexGame::HexGame(bool isServer, const std::string& serverIP, unsigned short port)
@@ -6,7 +8,10 @@ HexGame::HexGame(bool isServer, const std::string& serverIP, unsigned short port
       state(),
       clockStarted(false),
       serverIP(serverIP),
-      port(port)
+      port(port),
+      userManager(nullptr),
+      winDataRecorded(false),
+      victoryTimerStarted(false)
 {
     state.isServer = isServer;
     gridOrigin = sf::Vector2f(WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f);
@@ -15,8 +20,53 @@ HexGame::HexGame(bool isServer, const std::string& serverIP, unsigned short port
 // 析构函数
 HexGame::~HexGame()
 {
-    // 关闭网络连接
-    networkManager.close();
+    std::cout << "HexGame destructor called" << std::endl;
+    
+    // 确保窗口关闭
+    if (window.isOpen()) {
+        window.close();
+    }
+    
+    // 强制保存用户数据（如果有的话）
+    if (userManager) {
+        std::cout << "Force saving user data before cleanup..." << std::endl;
+        try {
+            // 调用新的forceSaveData方法来确保数据保存
+            if (userManager->isUserLoggedIn()) {
+                std::cout << "User is logged in, forcing data save..." << std::endl;
+                userManager->forceSaveData();
+            }
+        } catch (...) {
+            std::cout << "Error during force save" << std::endl;
+        }
+    }
+    
+    // 异步清理网络资源，避免阻塞主线程
+    std::cout << "Starting async network cleanup..." << std::endl;
+    
+    // 启动异步清理任务
+    auto cleanupTask = std::async(std::launch::async, [this]() {
+        try {
+            std::cout << "Async cleanup: closing network manager..." << std::endl;
+            networkManager.close();
+            std::cout << "Async cleanup: NetworkManager closed successfully" << std::endl;
+        } catch (...) {
+            std::cout << "Async cleanup: Error closing NetworkManager" << std::endl;
+        }
+    });
+    
+    // 等待清理完成，但设置超时避免无限等待
+    try {
+        if (cleanupTask.wait_for(std::chrono::milliseconds(500)) == std::future_status::timeout) {
+            std::cout << "Network cleanup timeout, proceeding anyway..." << std::endl;
+        } else {
+            std::cout << "Network cleanup completed successfully" << std::endl;
+        }
+    } catch (...) {
+        std::cout << "Exception during network cleanup wait" << std::endl;
+    }
+    
+    std::cout << "HexGame cleanup completed" << std::endl;
 }
 
 // 初始化游戏
@@ -80,6 +130,10 @@ void HexGame::initializeGameState()
                 return this->networkManager.hasClientConnected(); 
             } // 检查函数
         );
+        
+        // 保存迷宫半径用于后续难度映射
+        state.mazeRadius = radius;
+        
         std::vector<HexCoord> boundary_cells;
         generate_hex_grid(radius, state.gridData, boundary_cells);
         fix_start_end(radius, state.gridData, state.startHex, state.endHex);
@@ -183,13 +237,18 @@ void HexGame::setupNetworkCallbacks()
     // 设置网格数据回调
     networkManager.setGridDataCallback([this](const std::unordered_map<HexCoord, CellState>& gridData, 
                                              const HexCoord& startHex, 
-                                             const HexCoord& endHex) {
+                                             const HexCoord& endHex,
+                                             int radius) {
         state.gridData = gridData;
         state.startHex = startHex;
         state.endHex = endHex;
         state.playerPos = startHex;
+        
+        // 保存迷宫半径用于后续难度映射
+        state.mazeRadius = radius;
+        
         std::cout << "received grid data, start: (" << startHex.q << "," << startHex.r << "), end: (" 
-                 << endHex.q << "," << endHex.r << ")" << std::endl;
+                 << endHex.q << "," << endHex.r << "), radius: " << radius << std::endl;
                  
         if (!state.isServer) {
             state.otherPlayerPos = startHex;
@@ -219,6 +278,39 @@ void HexGame::setupNetworkCallbacks()
                 // 同步开始时间
                 state.gameTimeSynced = true;
             }
+            
+            // 服务器接收到客户端获胜的信号
+            if (gameEnded && !winDataRecorded) {
+                state.gameTime = gameTime;
+                state.gameEnded = true;
+                std::cout << "Server received client win signal with time: " << gameTime << "s" << std::endl;
+                
+                // 启动3秒倒计时
+                if (!victoryTimerStarted) {
+                    winnerMessage = "Player 2 (Client) Wins!";
+                    victoryTimer.restart();
+                    victoryTimerStarted = true;
+                    
+                    // 服务器端玩家败北，记录败北数据
+                    if (userManager && userManager->isUserLoggedIn()) {
+                        // 根据迷宫半径映射到难度
+                        Difficulty diff;
+                        if (state.mazeRadius == 4) diff = Difficulty::EASY;
+                        else if (state.mazeRadius == 5) diff = Difficulty::MEDIUM;
+                        else if (state.mazeRadius == 7) diff = Difficulty::HARD;
+                        else diff = Difficulty::MEDIUM; // 默认中等难度
+                        
+                        // 更新胜负统计（败北）
+                        userManager->updateMultiHexGameResult(diff, false);
+                        
+                        std::cout << "Server player loss recorded via callback: Won=false, Difficulty: " << 
+                            (diff == Difficulty::EASY ? "Easy" : 
+                             diff == Difficulty::MEDIUM ? "Medium" : "Hard") << std::endl;
+                        
+                        winDataRecorded = true;
+                    }
+                }
+            }
         } else {
             // 客户端接收游戏状态更新
             if (gameStarted && !state.gameTimeSynced) {
@@ -226,10 +318,37 @@ void HexGame::setupNetworkCallbacks()
                 std::cout << "Game time synced!" << std::endl;
             }
             
-            if (gameEnded) {
+            // 客户端接收到服务器获胜的信号
+            if (gameEnded && !winDataRecorded) {
                 state.gameTime = gameTime;
                 state.gameEnded = true;
-                std::cout << "Game ended with time: " << gameTime << "s" << std::endl;
+                std::cout << "Client received server win signal with time: " << gameTime << "s" << std::endl;
+                
+                // 启动3秒倒计时
+                if (!victoryTimerStarted) {
+                    winnerMessage = "Player 1 (Server) Wins!";
+                    victoryTimer.restart();
+                    victoryTimerStarted = true;
+                    
+                    // 客户端玩家败北，记录败北数据
+                    if (userManager && userManager->isUserLoggedIn()) {
+                        // 根据迷宫半径映射到难度
+                        Difficulty diff;
+                        if (state.mazeRadius == 4) diff = Difficulty::EASY;
+                        else if (state.mazeRadius == 5) diff = Difficulty::MEDIUM;
+                        else if (state.mazeRadius == 7) diff = Difficulty::HARD;
+                        else diff = Difficulty::MEDIUM; // 默认中等难度
+                        
+                        // 更新胜负统计（败北）
+                        userManager->updateMultiHexGameResult(diff, false);
+                        
+                        std::cout << "Client player loss recorded via callback: Won=false, Difficulty: " << 
+                            (diff == Difficulty::EASY ? "Easy" : 
+                             diff == Difficulty::MEDIUM ? "Medium" : "Hard") << std::endl;
+                        
+                        winDataRecorded = true;
+                    }
+                }
             }
         }
     });
@@ -434,11 +553,128 @@ void HexGame::handleKeyPress(sf::Keyboard::Key key)
         // 检查移动是否正确
         if (state.isServer) {
             checkPlayerMovement(state.playerPos);
-        } else if (state.isSecondPlayerChecked) {
-            // 客户端玩家移动时也进行检查，注意客户端应该使用pathB路径来检查自己的移动
-            bool checkResult = checkOtherPlayerMovement(state.playerPos);
-            std::cout << "Client check result: " << (checkResult ? "valid move" : "invalid move") 
-                     << ", current checkpoint: " << state.checkB << "/" << state.pathB.size() << std::endl;
+            
+            // 检查服务器玩家（玩家1）是否获胜
+            if (state.checkA >= state.pathA.size() && !state.gameEnded && !winDataRecorded) {
+                state.gameEnded = true;
+                float endTime = gameClock.getElapsedTime().asSeconds();
+                
+                // 发送游戏结束信号给客户端
+                networkManager.sendGameEndTime(endTime);
+                std::cout << "Server Player (Player 1) wins! Time: " << endTime << " seconds" << std::endl;
+                
+                // 调试信息
+                std::cout << "Server side userManager check:" << std::endl;
+                std::cout << "  userManager pointer: " << (userManager ? "Valid" : "NULL") << std::endl;
+                if (userManager) {
+                    std::cout << "  User logged in: " << (userManager->isUserLoggedIn() ? "Yes" : "No") << std::endl;
+                    if (userManager->isUserLoggedIn()) {
+                        std::cout << "  Current user: " << userManager->getCurrentUser() << std::endl;
+                    }
+                }
+                
+                // 立即记录服务器端玩家的数据
+                if (userManager && userManager->isUserLoggedIn()) {
+                    // 根据迷宫半径映射到难度
+                    Difficulty diff;
+                    if (state.mazeRadius == 4) diff = Difficulty::EASY;
+                    else if (state.mazeRadius == 5) diff = Difficulty::MEDIUM;
+                    else if (state.mazeRadius == 7) diff = Difficulty::HARD;
+                    else diff = Difficulty::MEDIUM; // 默认中等难度
+                    
+                    std::cout << "Calling server data update functions..." << std::endl;
+                    
+                    // 更新最佳时间（如果是最好成绩）
+                    userManager->updateMultiHexBestTime(diff, endTime);
+                    std::cout << "Server updateMultiHexBestTime called" << std::endl;
+                    
+                    // 更新胜负统计（获胜）
+                    userManager->updateMultiHexGameResult(diff, true);
+                    std::cout << "Server updateMultiHexGameResult called" << std::endl;
+                    
+                    std::cout << "Server player data recorded: Time=" << endTime << "s, Won=true, Difficulty: " << 
+                        (diff == Difficulty::EASY ? "Easy" : 
+                         diff == Difficulty::MEDIUM ? "Medium" : "Hard") << std::endl;
+                    
+                    winDataRecorded = true;
+                } else {
+                    std::cout << "Server side data not recorded: userManager=" << 
+                        (userManager ? "Valid" : "NULL") << 
+                        ", logged in=" << (userManager ? (userManager->isUserLoggedIn() ? "Yes" : "No") : "N/A") << std::endl;
+                }
+                
+                // 启动3秒倒计时
+                winnerMessage = "Player 1 (Server) Wins!";
+                victoryTimer.restart();
+                victoryTimerStarted = true;
+            }
+        } else {
+            // 客户端玩家移动时检查自己的路径进度（使用pathB）
+            if (state.playerPos != state.startHex) {
+                if (state.checkB < state.pathB.size() && state.playerPos == state.pathB[state.checkB]) {
+                    state.checkB++;
+                    std::cout << "Client player reached correct checkpoint: " << state.checkB 
+                             << "/" << state.pathB.size() 
+                             << " at position (" << state.playerPos.q << "," << state.playerPos.r << ")" << std::endl;
+                } else {
+                    std::cout << "Client player moved to non-checkpoint position: (" << state.playerPos.q << "," << state.playerPos.r << ")" << std::endl;
+                }
+            }
+            
+            // 检查客户端玩家（玩家2）是否获胜
+            if (state.checkB >= state.pathB.size() && !state.gameEnded && !winDataRecorded) {
+                state.gameEnded = true;
+                float endTime = gameClock.getElapsedTime().asSeconds();
+                
+                // 发送游戏结束信号给服务器
+                networkManager.sendGameEndTime(endTime);
+                std::cout << "Client Player (Player 2) wins! Time: " << endTime << " seconds" << std::endl;
+                
+                // 调试信息
+                std::cout << "Client side userManager check:" << std::endl;
+                std::cout << "  userManager pointer: " << (userManager ? "Valid" : "NULL") << std::endl;
+                if (userManager) {
+                    std::cout << "  User logged in: " << (userManager->isUserLoggedIn() ? "Yes" : "No") << std::endl;
+                    if (userManager->isUserLoggedIn()) {
+                        std::cout << "  Current user: " << userManager->getCurrentUser() << std::endl;
+                    }
+                }
+                
+                // 立即记录客户端玩家的数据（客户端有权限直接更新本地数据）
+                if (userManager && userManager->isUserLoggedIn()) {
+                    // 根据迷宫半径映射到难度
+                    Difficulty diff;
+                    if (state.mazeRadius == 4) diff = Difficulty::EASY;
+                    else if (state.mazeRadius == 5) diff = Difficulty::MEDIUM;
+                    else if (state.mazeRadius == 7) diff = Difficulty::HARD;
+                    else diff = Difficulty::MEDIUM; // 默认中等难度
+                    
+                    std::cout << "Calling client data update functions..." << std::endl;
+                    
+                    // 更新最佳时间（如果是最好成绩）
+                    userManager->updateMultiHexBestTime(diff, endTime);
+                    std::cout << "Client updateMultiHexBestTime called" << std::endl;
+                    
+                    // 更新胜负统计（获胜）
+                    userManager->updateMultiHexGameResult(diff, true);
+                    std::cout << "Client updateMultiHexGameResult called" << std::endl;
+                    
+                    std::cout << "Client player data recorded: Time=" << endTime << "s, Won=true, Difficulty: " << 
+                        (diff == Difficulty::EASY ? "Easy" : 
+                         diff == Difficulty::MEDIUM ? "Medium" : "Hard") << std::endl;
+                    
+                    winDataRecorded = true;
+                } else {
+                    std::cout << "Client side data not recorded: userManager=" << 
+                        (userManager ? "Valid" : "NULL") << 
+                        ", logged in=" << (userManager ? (userManager->isUserLoggedIn() ? "Yes" : "No") : "N/A") << std::endl;
+                }
+                
+                // 启动3秒倒计时
+                winnerMessage = "Player 2 (Client) Wins!";
+                victoryTimer.restart();
+                victoryTimerStarted = true;
+            }
         }
         
         // 调试输出
@@ -462,14 +698,6 @@ void HexGame::handleKeyPress(sf::Keyboard::Key key)
         if (!sent) {
             std::cout << "All position update attempts failed" << std::endl;
         }
-        
-        // 检查是否到达终点
-        if (check_win(state.playerPos, state.endHex)) {
-            state.gameEnded = true;
-            float endTime = gameClock.getElapsedTime().asSeconds();
-            networkManager.sendGameEndTime(endTime);
-            std::cout << "You win! Time: " << endTime << " seconds" << std::endl;
-        }
     }
 }
 
@@ -479,6 +707,7 @@ void HexGame::processEvents()
     sf::Event event;
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
+            std::cout << "Window close event detected, closing window..." << std::endl;
             window.close();
         } else if (event.type == sf::Event::KeyPressed) {
             handleKeyPress(event.key.code);
@@ -494,7 +723,7 @@ void HexGame::update()
     
     // 如果是服务器并且游戏已开始，发送网格数据
     if (state.isServer && !state.gameStarted) {
-        networkManager.sendGridData(state.gridData, state.startHex, state.endHex);
+        networkManager.sendGridData(state.gridData, state.startHex, state.endHex, state.mazeRadius);
         networkManager.sendGridNumbers(state.gridNumbers);  // 发送网格编号数据
         state.gameStarted = true;
     }
@@ -518,6 +747,12 @@ void HexGame::update()
     // 更新游戏时间
     if (clockStarted && !state.gameEnded) {
         state.gameTime = gameClock.getElapsedTime().asSeconds();
+    }
+    
+    // 检查胜利倒计时，3秒后自动关闭窗口
+    if (victoryTimerStarted && victoryTimer.getElapsedTime().asSeconds() >= 3.0f) {
+        std::cout << "Victory timer expired, closing game window..." << std::endl;
+        window.close();
     }
 }
 
@@ -597,21 +832,63 @@ void HexGame::render()
         }
     }
     
+    // 显示胜利信息
+    if (state.gameEnded && font.loadFromFile("arial.ttf")) {
+        sf::Text winText;
+        winText.setFont(font);
+        winText.setCharacterSize(40);
+        winText.setFillColor(sf::Color::Red);
+        
+        // 使用统一的胜利消息
+        std::string displayMessage = winnerMessage;
+        if (victoryTimerStarted) {
+            int remainingTime = 3 - static_cast<int>(victoryTimer.getElapsedTime().asSeconds());
+            if (remainingTime > 0) {
+                displayMessage += "\nClosing in " + std::to_string(remainingTime) + "s";
+            }
+        }
+        
+        winText.setString(displayMessage);
+        
+        sf::FloatRect textBounds = winText.getLocalBounds();
+        winText.setPosition(
+            (WINDOW_WIDTH - textBounds.width) / 2.f,
+            (WINDOW_HEIGHT - textBounds.height) / 2.f
+        );
+        
+        window.draw(winText);
+    }
+    
     window.display();
 }
 
 // 运行游戏
 void HexGame::run()
 {
+    std::cout << "HexGame started running..." << std::endl;
+    
     while (isRunning()) {
         processEvents();
         update();
         render();
     }
+    
+    std::cout << "HexGame run loop ended" << std::endl;
+    
+    // 不在这里立即清理网络资源，让析构函数处理
+    // 这样可以避免胜利后的竞态条件
+    
+    std::cout << "HexGame run method completed" << std::endl;
 }
 
 // 游戏是否运行中
 bool HexGame::isRunning() const
 {
     return window.isOpen();
+}
+
+// 设置用户管理器
+void HexGame::setUserManager(UserManager* manager)
+{
+    userManager = manager;
 } 
