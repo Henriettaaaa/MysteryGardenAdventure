@@ -94,7 +94,14 @@ int main() {
                 float elapsedTime = virtualMaze.getElapsedTime();
                 // 如果游戏完成（时间不为0），更新记录
                 if (elapsedTime > 0.0f) {
-                    userManager.updateBestTime(size, elapsedTime);
+                    // 根据迷宫大小确定难度
+                    Difficulty diff;
+                    if (size == 5) diff = Difficulty::EASY;
+                    else if (size == 7) diff = Difficulty::MEDIUM;
+                    else if (size == 9) diff = Difficulty::HARD;
+                    else diff = Difficulty::MEDIUM; // 默认
+                    
+                    userManager.updateSingleSquareBestTime(diff, elapsedTime);
                     std::cout << "timing:" << elapsedTime << " seconds" << std::endl;
                 }
             }
@@ -123,14 +130,8 @@ int main() {
         }
 
         case MainScene::SceneState::LEADERBOARD: {
-            // 排行榜功能
-            // 要求用户输入迷宫大小
-            std::cout << "input maze size: ";
-            int mazeSize;
-            std::cin >> mazeSize;
-            
-            // 显示排行榜
-            Leaderboard leaderboard(userManager, mazeSize);
+            // 排行榜功能 - 不再需要输入迷宫大小
+            Leaderboard leaderboard(userManager);
             leaderboard.run();
             
             // 重置状态

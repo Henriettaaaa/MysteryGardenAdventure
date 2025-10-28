@@ -150,6 +150,50 @@ void UserManager::loadUserData() {
         else if (line.find("password=") == 0) {
             currentUser.password = line.substr(9);
         }
+        // 新格式数据加载
+        else if (line.find("single_square_time:") == 0) {
+            std::istringstream iss(line.substr(19));
+            std::string diffStr;
+            float time;
+            
+            if (std::getline(iss, diffStr, ':') && iss >> time) {
+                Difficulty diff = stringToDifficulty(diffStr);
+                currentUser.gameData.singleSquareBestTimes[diff] = time;
+            }
+        }
+        else if (line.find("multi_square_stats:") == 0) {
+            std::istringstream iss(line.substr(19));
+            std::string diffStr;
+            int wins, total;
+            char colon;
+            
+            if (std::getline(iss, diffStr, ':') && iss >> wins >> colon >> total) {
+                Difficulty diff = stringToDifficulty(diffStr);
+                currentUser.gameData.multiSquareStats[diff] = std::make_pair(wins, total);
+            }
+        }
+        else if (line.find("multi_hex_time:") == 0) {
+            std::istringstream iss(line.substr(15));
+            std::string diffStr;
+            float time;
+            
+            if (std::getline(iss, diffStr, ':') && iss >> time) {
+                Difficulty diff = stringToDifficulty(diffStr);
+                currentUser.gameData.multiHexBestTimes[diff] = time;
+            }
+        }
+        else if (line.find("multi_hex_stats:") == 0) {
+            std::istringstream iss(line.substr(16));
+            std::string diffStr;
+            int wins, total;
+            char colon;
+            
+            if (std::getline(iss, diffStr, ':') && iss >> wins >> colon >> total) {
+                Difficulty diff = stringToDifficulty(diffStr);
+                currentUser.gameData.multiHexStats[diff] = std::make_pair(wins, total);
+            }
+        }
+        // 兼容旧格式
         else if (line.find("time:") == 0) {
             std::istringstream iss(line.substr(5));
             int mazeSize;
@@ -185,6 +229,34 @@ void UserManager::saveUserData() {
         file << "[" << username << "]\n";
         file << "password=" << userInfo.password << "\n";
         
+        // 保存新的游戏数据格式
+        const auto& gameData = userInfo.gameData;
+        
+        // 单人正方形最佳时间
+        for (const auto& timePair : gameData.singleSquareBestTimes) {
+            file << "single_square_time:" << difficultyToString(timePair.first) 
+                 << ":" << timePair.second << "\n";
+        }
+        
+        // 双人正方形统计
+        for (const auto& statPair : gameData.multiSquareStats) {
+            file << "multi_square_stats:" << difficultyToString(statPair.first) 
+                 << ":" << statPair.second.first << ":" << statPair.second.second << "\n";
+        }
+        
+        // 双人六边形最佳时间
+        for (const auto& timePair : gameData.multiHexBestTimes) {
+            file << "multi_hex_time:" << difficultyToString(timePair.first) 
+                 << ":" << timePair.second << "\n";
+        }
+        
+        // 双人六边形统计
+        for (const auto& statPair : gameData.multiHexStats) {
+            file << "multi_hex_stats:" << difficultyToString(statPair.first) 
+                 << ":" << statPair.second.first << ":" << statPair.second.second << "\n";
+        }
+        
+        // 保留旧格式以便兼容性
         for (const auto& timePair : userInfo.bestTimes) {
             int mazeSize = timePair.first;
             float time = timePair.second;
@@ -420,4 +492,168 @@ std::vector<std::pair<std::string, float>> UserManager::getLeaderboard(int mazeS
 void UserManager::logout() {
     isLoggedIn = false;
     currentUser = "";
+}
+
+std::string UserManager::difficultyToString(Difficulty diff) const {
+    switch (diff) {
+        case Difficulty::EASY: return "easy";
+        case Difficulty::MEDIUM: return "medium";
+        case Difficulty::HARD: return "hard";
+        default: return "medium";
+    }
+}
+
+Difficulty UserManager::stringToDifficulty(const std::string& str) const {
+    if (str == "easy") return Difficulty::EASY;
+    if (str == "hard") return Difficulty::HARD;
+    return Difficulty::MEDIUM; // 默认中等
+}
+
+std::string UserManager::gameModeToString(GameMode mode) const {
+    switch (mode) {
+        case GameMode::SINGLE_SQUARE: return "single_square";
+        case GameMode::MULTI_SQUARE: return "multi_square";
+        case GameMode::MULTI_HEX: return "multi_hex";
+        default: return "single_square";
+    }
+}
+
+GameMode UserManager::stringToGameMode(const std::string& str) const {
+    if (str == "multi_square") return GameMode::MULTI_SQUARE;
+    if (str == "multi_hex") return GameMode::MULTI_HEX;
+    return GameMode::SINGLE_SQUARE; // 默认单人正方形
+}
+
+void UserManager::updateSingleSquareBestTime(Difficulty diff, float time) {
+    if (!isLoggedIn) return;
+    
+    auto& user = users[currentUser];
+    auto& bestTimes = user.gameData.singleSquareBestTimes;
+    
+    // 如果还没有该难度的记录，或者新时间更好，更新记录
+    if (bestTimes.find(diff) == bestTimes.end() || time < bestTimes[diff]) {
+        bestTimes[diff] = time;
+        saveUserData();
+    }
+}
+
+void UserManager::updateMultiSquareGameResult(Difficulty diff, bool won) {
+    if (!isLoggedIn) return;
+    
+    auto& user = users[currentUser];
+    auto& stats = user.gameData.multiSquareStats;
+    
+    // 如果还没有该难度的记录，初始化为(0, 0)
+    if (stats.find(diff) == stats.end()) {
+        stats[diff] = std::make_pair(0, 0);
+    }
+    
+    // 更新统计数据
+    if (won) {
+        stats[diff].first++;  // 胜利次数+1
+    }
+    stats[diff].second++;     // 总次数+1
+    
+    saveUserData();
+}
+
+void UserManager::updateMultiHexBestTime(Difficulty diff, float time) {
+    if (!isLoggedIn) return;
+    
+    auto& user = users[currentUser];
+    auto& bestTimes = user.gameData.multiHexBestTimes;
+    
+    // 如果还没有该难度的记录，或者新时间更好，更新记录
+    if (bestTimes.find(diff) == bestTimes.end() || time < bestTimes[diff]) {
+        bestTimes[diff] = time;
+        saveUserData();
+    }
+}
+
+void UserManager::updateMultiHexGameResult(Difficulty diff, bool won) {
+    if (!isLoggedIn) return;
+    
+    auto& user = users[currentUser];
+    auto& stats = user.gameData.multiHexStats;
+    
+    // 如果还没有该难度的记录，初始化为(0, 0)
+    if (stats.find(diff) == stats.end()) {
+        stats[diff] = std::make_pair(0, 0);
+    }
+    
+    // 更新统计数据
+    if (won) {
+        stats[diff].first++;  // 胜利次数+1
+    }
+    stats[diff].second++;     // 总次数+1
+    
+    saveUserData();
+}
+
+std::map<std::string, float> UserManager::getSingleSquareLeaderboard(Difficulty diff) {
+    std::map<std::string, float> leaderboard;
+    
+    // 遍历所有用户，查找有该难度记录的用户
+    for (const auto& userPair : users) {
+        const std::string& username = userPair.first;
+        const UserInfo& userInfo = userPair.second;
+        
+        auto it = userInfo.gameData.singleSquareBestTimes.find(diff);
+        if (it != userInfo.gameData.singleSquareBestTimes.end()) {
+            leaderboard[username] = it->second;
+        }
+    }
+    
+    return leaderboard;
+}
+
+std::map<std::string, std::pair<int, int>> UserManager::getMultiSquareLeaderboard(Difficulty diff) {
+    std::map<std::string, std::pair<int, int>> leaderboard;
+    
+    // 遍历所有用户，查找有该难度记录的用户
+    for (const auto& userPair : users) {
+        const std::string& username = userPair.first;
+        const UserInfo& userInfo = userPair.second;
+        
+        auto it = userInfo.gameData.multiSquareStats.find(diff);
+        if (it != userInfo.gameData.multiSquareStats.end()) {
+            leaderboard[username] = it->second;
+        }
+    }
+    
+    return leaderboard;
+}
+
+std::map<std::string, float> UserManager::getMultiHexTimeLeaderboard(Difficulty diff) {
+    std::map<std::string, float> leaderboard;
+    
+    // 遍历所有用户，查找有该难度记录的用户
+    for (const auto& userPair : users) {
+        const std::string& username = userPair.first;
+        const UserInfo& userInfo = userPair.second;
+        
+        auto it = userInfo.gameData.multiHexBestTimes.find(diff);
+        if (it != userInfo.gameData.multiHexBestTimes.end()) {
+            leaderboard[username] = it->second;
+        }
+    }
+    
+    return leaderboard;
+}
+
+std::map<std::string, std::pair<int, int>> UserManager::getMultiHexStatsLeaderboard(Difficulty diff) {
+    std::map<std::string, std::pair<int, int>> leaderboard;
+    
+    // 遍历所有用户，查找有该难度记录的用户
+    for (const auto& userPair : users) {
+        const std::string& username = userPair.first;
+        const UserInfo& userInfo = userPair.second;
+        
+        auto it = userInfo.gameData.multiHexStats.find(diff);
+        if (it != userInfo.gameData.multiHexStats.end()) {
+            leaderboard[username] = it->second;
+        }
+    }
+    
+    return leaderboard;
 } 

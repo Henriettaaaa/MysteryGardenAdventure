@@ -1,13 +1,137 @@
 #include <iostream>
 #include <queue>
+#include <SFML/Graphics.hpp>
 
 #include "PhysicalMaze.h"
 
 int PhysicalMaze::inputSize() {
-    int s;  //迷宫尺寸
-    std::cout << "please input the size of the maze: ";
-    std::cin >> s;
-    return s;
+    // 创建一个窗口用于选择难度
+    sf::RenderWindow window(sf::VideoMode(400, 300), "select difficulty", sf::Style::Close);
+    window.setFramerateLimit(60);
+    
+    sf::Font font;
+    // 尝试加载字体
+    if (!font.loadFromFile("arial.ttf")) {
+        std::cout << "fail to load font, use default difficulty(medium)" << std::endl;
+        return 7;  // 如果字体加载失败，默认返回中等难度
+    }
+    
+    // 创建标题文本
+    sf::Text titleText("Please select difficulty", font, 30);
+    titleText.setFillColor(sf::Color::White);
+    sf::FloatRect titleBounds = titleText.getLocalBounds();
+    titleText.setPosition((400 - titleBounds.width) / 2, 30);
+    
+    // 创建三个难度按钮
+    sf::RectangleShape easyButton(sf::Vector2f(200, 50));
+    easyButton.setPosition(100, 80);
+    easyButton.setFillColor(sf::Color(70, 70, 170));
+    
+    sf::Text easyText("Easy (5)", font, 20);
+    easyText.setFillColor(sf::Color::White);
+    sf::FloatRect easyBounds = easyText.getLocalBounds();
+    easyText.setPosition(
+        easyButton.getPosition().x + (easyButton.getSize().x - easyBounds.width) / 2,
+        easyButton.getPosition().y + (easyButton.getSize().y - easyBounds.height) / 2 - 5
+    );
+    
+    sf::RectangleShape mediumButton(sf::Vector2f(200, 50));
+    mediumButton.setPosition(100, 145);
+    mediumButton.setFillColor(sf::Color(70, 70, 170));
+    
+    sf::Text mediumText("Medium (7)", font, 20);
+    mediumText.setFillColor(sf::Color::White);
+    sf::FloatRect mediumBounds = mediumText.getLocalBounds();
+    mediumText.setPosition(
+        mediumButton.getPosition().x + (mediumButton.getSize().x - mediumBounds.width) / 2,
+        mediumButton.getPosition().y + (mediumButton.getSize().y - mediumBounds.height) / 2 - 5
+    );
+    
+    sf::RectangleShape hardButton(sf::Vector2f(200, 50));
+    hardButton.setPosition(100, 210);
+    hardButton.setFillColor(sf::Color(70, 70, 170));
+    
+    sf::Text hardText("Hard (9)", font, 20);
+    hardText.setFillColor(sf::Color::White);
+    sf::FloatRect hardBounds = hardText.getLocalBounds();
+    hardText.setPosition(
+        hardButton.getPosition().x + (hardButton.getSize().x - hardBounds.width) / 2,
+        hardButton.getPosition().y + (hardButton.getSize().y - hardBounds.height) / 2 - 5
+    );
+    
+    int selectedSize = 7;  // 默认中等难度
+    
+    // 主循环
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+                return selectedSize;  // 如果关闭窗口，返回当前选择的难度
+            }
+            
+            // 处理鼠标移动，改变按钮颜色
+            if (event.type == sf::Event::MouseMoved) {
+                sf::Vector2f mousePos(event.mouseMove.x, event.mouseMove.y);
+                
+                // 检查鼠标是否悬停在按钮上
+                if (easyButton.getGlobalBounds().contains(mousePos)) {
+                    easyButton.setFillColor(sf::Color(100, 100, 200));
+                } else {
+                    easyButton.setFillColor(sf::Color(70, 70, 170));
+                }
+                
+                if (mediumButton.getGlobalBounds().contains(mousePos)) {
+                    mediumButton.setFillColor(sf::Color(100, 100, 200));
+                } else {
+                    mediumButton.setFillColor(sf::Color(70, 70, 170));
+                }
+                
+                if (hardButton.getGlobalBounds().contains(mousePos)) {
+                    hardButton.setFillColor(sf::Color(100, 100, 200));
+                } else {
+                    hardButton.setFillColor(sf::Color(70, 70, 170));
+                }
+            }
+            
+            // 处理鼠标点击
+            if (event.type == sf::Event::MouseButtonPressed && 
+                event.mouseButton.button == sf::Mouse::Left) {
+                sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+                
+                if (easyButton.getGlobalBounds().contains(mousePos)) {
+                    selectedSize = 5;  // 简单难度
+                    window.close();
+                    return selectedSize;
+                }
+                
+                if (mediumButton.getGlobalBounds().contains(mousePos)) {
+                    selectedSize = 7;  // 中等难度
+                    window.close();
+                    return selectedSize;
+                }
+                
+                if (hardButton.getGlobalBounds().contains(mousePos)) {
+                    selectedSize = 9;  // 困难难度
+                    window.close();
+                    return selectedSize;
+                }
+            }
+        }
+        
+        // 清空窗口并绘制所有元素
+        window.clear(sf::Color(30, 30, 30));
+        window.draw(titleText);
+        window.draw(easyButton);
+        window.draw(easyText);
+        window.draw(mediumButton);
+        window.draw(mediumText);
+        window.draw(hardButton);
+        window.draw(hardText);
+        window.display();
+    }
+    
+    return selectedSize;  // 默认返回选择的难度
 }
 
 //*初始化迷宫参数

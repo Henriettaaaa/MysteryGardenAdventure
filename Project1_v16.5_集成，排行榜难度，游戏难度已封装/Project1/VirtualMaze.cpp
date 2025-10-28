@@ -562,15 +562,18 @@ void VirtualMaze::displaySingle(){
                 // !路线点位检查
                 if (playerPositionA.first == absolutePathA[checkpoint] / virtualSize 
                     && playerPositionA.second == absolutePathA[checkpoint] % virtualSize) {
-                    checkpoint++;
+                    if (checkpoint != absolutePathA.size())
+                        checkpoint++;
                 }
 
                 // !检查是否到达终点，由点位检查都通过作为判定
                 if (checkpoint == absolutePathA.size()) {
-                    std::cout << "Congratulations! You win!" << std::endl;
-                    // !停止计时器
-                    isTimerRunning = false;
                     
+                    // !停止玩家游戏计时的计时器
+                    isTimerRunning = false;
+
+                    //输出玩家赢了的信息
+                    std::cout << "Congratulations! You win!" << std::endl;
                     // 获取drawSingleMap中定义的静态变量的引用
                     // 使用全局变量
                     g_playerWon = true;
@@ -633,11 +636,7 @@ void VirtualMaze::drawSingleMap() {
     drawRelativePaths();
     
     // 检查是否处于胜利状态，并显示胜利信息
-    static bool& playerWon = *new bool(false);
-    static sf::Clock& victoryTimer = *new sf::Clock();
-    static bool& timerStarted = *new bool(false);
-    
-    if (playerWon) {
+    if (g_playerWon) {
         // 创建胜利文本
         sf::Text winText;
         winText.setFont(font);
@@ -653,7 +652,7 @@ void VirtualMaze::drawSingleMap() {
         );
         
         // 显示倒计时文本
-        int remainingTime = 3 - static_cast<int>(victoryTimer.getElapsedTime().asSeconds());
+        int remainingTime = 3 - static_cast<int>(g_victoryTimer.getElapsedTime().asSeconds());
         if (remainingTime >= 0) {
             sf::Text countdownText;
             countdownText.setFont(font);
@@ -672,9 +671,9 @@ void VirtualMaze::drawSingleMap() {
         }
         
         // 检查是否已经过了3秒
-        if (victoryTimer.getElapsedTime().asSeconds() >= 3.0f) {
-            timerStarted = false;   // 重置标志以便下次使用
-            playerWon = false;      // 重置胜利状态
+        if (g_victoryTimer.getElapsedTime().asSeconds() >= 3.0f) {
+            g_timerStarted = false;   // 重置标志以便下次使用
+            g_playerWon = false;      // 重置胜利状态
             window.close();         // 关闭游戏窗口
             return;                 // 退出函数，返回到main函数
         }
@@ -1104,7 +1103,7 @@ void VirtualMaze::displayRelativeMaze() {
                         // !可能是改这里
                         std::cout<<"Change here!!Bmove"<< std::endl;
                         // 检查是否到达终点
-                        if (playerPositionB.first == 1 && playerPositionB.second == 1) {
+                        if (playerPositionB.first == virtualSize - 2 && playerPositionB.second == virtualSize - 2) {
                             playerBWon = true;
                         }
                     }
