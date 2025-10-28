@@ -48,6 +48,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -125,7 +126,6 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\GUI_VS\SFML-2.6.2\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -137,20 +137,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Leaderboard.cpp" />
+    <ClCompile Include="HexGrid.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MainScene.cpp" />
-    <ClCompile Include="PhysicalMaze.cpp" />
-    <ClCompile Include="player_multi.cpp" />
-    <ClCompile Include="UserManager.cpp" />
-    <ClCompile Include="VirtualMaze.cpp" />
+    <ClCompile Include="SingleHex.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Leaderboard.h" />
-    <ClInclude Include="MainScene.h" />
-    <ClInclude Include="PhysicalMaze.h" />
-    <ClInclude Include="UserManager.h" />
-    <ClInclude Include="VirtualMaze.h" />
+    <ClInclude Include="HexGrid.h" />
+    <ClInclude Include="SingleHex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
