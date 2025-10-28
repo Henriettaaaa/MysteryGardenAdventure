@@ -6,8 +6,8 @@
 
 UserManager::UserManager() 
     : isLoggedIn(false), focusUsername(false), focusPassword(false), userDataFile("users.txt") {
-    // 初始化界面
-    initWindow();
+    // 不再在构造函数中初始化窗口，避免启动时显示空白窗口
+    // initWindow(); // 移到run()方法中
     initFont();
     initUI();
     
@@ -408,6 +408,11 @@ bool UserManager::loginUser(const std::string& username, const std::string& pass
 }
 
 void UserManager::run() {
+    // 只在调用run方法时创建窗口，避免启动时显示空白界面
+    if (!window.isOpen()) {
+        initWindow();
+    }
+    
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {

@@ -357,7 +357,7 @@ void HexGame::setupNetworkCallbacks()
     networkManager.setGridNumbersCallback([this](const std::unordered_map<HexCoord, std::vector<int>>& gridNumbers) {
         if (!state.isServer) {
             state.gridNumbers = gridNumbers;
-            std::cout << "Received grid numbers" << std::endl;
+            std::cout << "Client received grid numbers, total cells with numbers: " << gridNumbers.size() << std::endl;
             
             // 客户端需要基于接收到的gridNumbers构建路径
             state.pathA.clear();
@@ -369,7 +369,10 @@ void HexGame::setupNetworkCallbacks()
                 // 如果格子有序号（向量非空）
                 if (!pair.second.empty()) {
                     // 使用第一个序号（大多数格子只有一个序号）
-                    numberedCells.push_back(std::make_pair(pair.first, pair.second[0]));
+                    int number = pair.second[0];
+                    numberedCells.push_back(std::make_pair(pair.first, number));
+                    std::cout << "Found numbered cell at (" << pair.first.q << "," << pair.first.r 
+                             << ") with number " << number << std::endl;
                 }
             }
             
@@ -379,19 +382,33 @@ void HexGame::setupNetworkCallbacks()
                     return a.second < b.second;
                 });
             
+            std::cout << "Sorted numbered cells:" << std::endl;
+            for (size_t i = 0; i < numberedCells.size(); i++) {
+                std::cout << "  [" << i << "] " << numberedCells[i].second 
+                         << " at (" << numberedCells[i].first.q << "," << numberedCells[i].first.r << ")" << std::endl;
+            }
+            
             // 构建路径B (客户端玩家使用的路径，从起点向中点方向)
+            // 客户端玩家从起点开始，按编号1,2,3...前进
             for (const auto& cell : numberedCells) {
                 state.pathB.push_back(cell.first);
             }
             
             // 构建pathA (用于检查服务器玩家的路径，从起点到终点)
-            // 同样先添加所有格子，但在客户端我们只检查一半路程
+            // 服务器玩家从终点向起点前进，所以路径顺序相反
             for (int i = numberedCells.size() - 1; i >= 0; i--) {
                 state.pathA.push_back(numberedCells[i].first);
             }
             
-            std::cout << "Client constructed paths: A path length=" << state.pathA.size() 
-                     << ", B path length=" << state.pathB.size() << std::endl;
+            std::cout << "Client constructed paths:" << std::endl;
+            std::cout << "  PathA (server player) length: " << state.pathA.size() << std::endl;
+            std::cout << "  PathB (client player) length: " << state.pathB.size() << std::endl;
+            
+            // 打印pathB的前几个位置用于调试
+            std::cout << "  PathB first 5 positions:" << std::endl;
+            for (size_t i = 0; i < std::min<size_t>(5, state.pathB.size()); i++) {
+                std::cout << "    [" << i << "] (" << state.pathB[i].q << "," << state.pathB[i].r << ")" << std::endl;
+            }
         }
     });
 
@@ -617,9 +634,17 @@ void HexGame::handleKeyPress(sf::Keyboard::Key key)
                              << "/" << state.pathB.size() 
                              << " at position (" << state.playerPos.q << "," << state.playerPos.r << ")" << std::endl;
                 } else {
-                    std::cout << "Client player moved to non-checkpoint position: (" << state.playerPos.q << "," << state.playerPos.r << ")" << std::endl;
+                    std::cout << "Client player moved to non-checkpoint position: (" << state.playerPos.q << "," << state.playerPos.r << ")" 
+                             << ", expected checkpoint: " << (state.checkB < state.pathB.size() ? 
+                                std::to_string(state.pathB[state.checkB].q) + "," + std::to_string(state.pathB[state.checkB].r) : "N/A") << std::endl;
                 }
             }
+            
+            // 添加调试信息
+            std::cout << "Client checking victory condition: checkB=" << state.checkB 
+                     << ", pathB.size()=" << state.pathB.size() 
+                     << ", gameEnded=" << (state.gameEnded ? "true" : "false")
+                     << ", winDataRecorded=" << (winDataRecorded ? "true" : "false") << std::endl;
             
             // 检查客户端玩家（玩家2）是否获胜
             if (state.checkB >= state.pathB.size() && !state.gameEnded && !winDataRecorded) {
