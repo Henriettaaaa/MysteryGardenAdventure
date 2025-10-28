@@ -15,27 +15,72 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="player_multi.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="SingleHex.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="UserManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMaze.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="HexGame.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="HexgameRunner.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="HexGrid.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Leaderboard.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MainScene.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="NetworkManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicalMaze.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SingleHex.h">
+    <ClInclude Include="HexGame.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="HexgameRunner.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="HexGrid.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Leaderboard.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MainScene.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="NetworkManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicalMaze.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SingleHex.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="UserManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMaze.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

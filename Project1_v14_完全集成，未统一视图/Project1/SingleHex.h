@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include <random>
 #include <cmath>
+#include <functional>
 
 // --- 常量定义 ---
 const int WINDOW_WIDTH = 1000; // 窗口宽度
@@ -100,7 +101,7 @@ bool check_win(const HexCoord& player_pos, const HexCoord& end_pos);
 
 // --- 核心函数声明 ---
 // 获取用户输入的网格大小
-int input_grid_size();
+int input_grid_size(bool initialClientConnected = false, std::function<bool()> hasClientConnectedFunc = nullptr);
 
 // 寻路函数，使用随机DFS且禁止回头
 bool findPath(const HexCoord& start, const HexCoord& end, 

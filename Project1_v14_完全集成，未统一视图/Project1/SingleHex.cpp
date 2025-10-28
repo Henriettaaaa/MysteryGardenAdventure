@@ -1,6 +1,10 @@
 #include "SingleHex.h"
+// 前置声明以避免循环引用
+class NetworkManager;
+#include "NetworkManager.h"
 #include <iostream>
 #include <algorithm>
+#include <functional>
 
 // --- 全局变量定义 ---
 // 定义六个方向的轴坐标偏移量
@@ -88,20 +92,117 @@ bool check_win(const HexCoord& player_pos, const HexCoord& end_pos) {
 
 // --- 核心函数实现 ---
 // 获取用户输入的网格大小
-int input_grid_size() {
-    int GRID_RADIUS;
-    std::cout << "input size: ";
-    std::cin >> GRID_RADIUS;
-    
-    // 验证输入合法性
-    if (GRID_RADIUS < 3) {
-        std::cout << "too small, set to 3" << std::endl;
-        GRID_RADIUS = 3;
-    } else if (GRID_RADIUS > 20) {
-        std::cout << "too large, set to 20" << std::endl;
-        GRID_RADIUS = 20;
+int input_grid_size(bool initialClientConnected, std::function<bool()> hasClientConnectedFunc) {
+    int GRID_RADIUS = 5; // 默认值
+
+    // 创建选择难度的窗口
+    sf::RenderWindow diffWindow(sf::VideoMode(600, 400), "choose difficulty");
+    sf::Font font;
+    if (!font.loadFromFile("arial.ttf")) {
+        std::cerr << "Failed to load font file" << std::endl;
+        return GRID_RADIUS; // 返回默认值
     }
     
+    // 创建标题文本
+    sf::Text titleText("Please choose the difficulty", font, 30);
+    titleText.setFillColor(sf::Color::White);
+    titleText.setPosition(200, 50);
+    
+    // 创建难度按钮
+    sf::RectangleShape easyButton(sf::Vector2f(200, 60));
+    easyButton.setPosition(200, 120);
+    easyButton.setFillColor(sf::Color(100, 200, 100)); // 绿色
+    
+    sf::Text easyText("Easy (4)", font, 20);
+    easyText.setFillColor(sf::Color::White);
+    easyText.setPosition(255, 140);
+    
+    sf::RectangleShape mediumButton(sf::Vector2f(200, 60));
+    mediumButton.setPosition(200, 200);
+    mediumButton.setFillColor(sf::Color(200, 200, 100)); // 黄色
+    
+    sf::Text mediumText("Medium (5)", font, 20);
+    mediumText.setFillColor(sf::Color::White);
+    mediumText.setPosition(255, 220);
+    
+    sf::RectangleShape hardButton(sf::Vector2f(200, 60));
+    hardButton.setPosition(200, 280);
+    hardButton.setFillColor(sf::Color(200, 100, 100)); // 红色
+    
+    sf::Text hardText("Hard (7)", font, 20);
+    hardText.setFillColor(sf::Color::White);
+    hardText.setPosition(255, 300);
+
+    // 等待客户端连接的提示文本
+    sf::Text waitingText("Waiting for client connection...", font, 24);
+    waitingText.setFillColor(sf::Color::White);
+    waitingText.setPosition(200, 180);
+    
+    // 检查客户端连接状态的时钟
+    sf::Clock connectionCheckClock;
+    bool isClientConnected = initialClientConnected; // 初始化连接状态
+    
+    // 主循环
+    while (diffWindow.isOpen()) {
+        // 定期检查客户端连接状态
+        if (connectionCheckClock.getElapsedTime().asSeconds() >= 0.5f) {
+            connectionCheckClock.restart();
+            
+            // 如果提供了检查函数，则使用它来检查客户端连接状态
+            if (hasClientConnectedFunc) {
+                isClientConnected = hasClientConnectedFunc();
+            }
+        }
+        
+        sf::Event event;
+        while (diffWindow.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                diffWindow.close();
+                return GRID_RADIUS; // 如果用户关闭窗口，返回默认值
+            }
+            
+            // 只有当客户端已连接时才处理点击事件
+            if (isClientConnected && event.type == sf::Event::MouseButtonPressed) {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(diffWindow);
+                
+                // 检查点击的是哪个按钮
+                if (easyButton.getGlobalBounds().contains((float)mousePos.x, (float)mousePos.y)) {
+                    GRID_RADIUS = 4; // 简单难度
+                    diffWindow.close();
+                    break;
+                } else if (mediumButton.getGlobalBounds().contains((float)mousePos.x, (float)mousePos.y)) {
+                    GRID_RADIUS = 5; // 中等难度
+                    diffWindow.close();
+                    break;
+                } else if (hardButton.getGlobalBounds().contains((float)mousePos.x, (float)mousePos.y)) {
+                    GRID_RADIUS = 7; // 困难难度
+                    diffWindow.close();
+                    break;
+                }
+            }
+        }
+        
+        diffWindow.clear(sf::Color(30, 30, 30));
+        
+        if (!isClientConnected) {
+            // 如果客户端还未连接，显示等待信息
+            diffWindow.draw(titleText);
+            diffWindow.draw(waitingText);
+        } else {
+            // 客户端已连接，显示难度选择按钮
+            diffWindow.draw(titleText);
+            diffWindow.draw(easyButton);
+            diffWindow.draw(easyText);
+            diffWindow.draw(mediumButton);
+            diffWindow.draw(mediumText);
+            diffWindow.draw(hardButton);
+            diffWindow.draw(hardText);
+        }
+        
+        diffWindow.display();
+    }
+    
+    std::cout << "选择的难度级别: " << GRID_RADIUS << std::endl;
     return GRID_RADIUS;
 }
 

@@ -18,6 +18,32 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="HexGame.cpp" />
+    <ClCompile Include="HexgameRunner.cpp" />
+    <ClCompile Include="HexGrid.cpp" />
+    <ClCompile Include="Leaderboard.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainScene.cpp" />
+    <ClCompile Include="NetworkManager.cpp" />
+    <ClCompile Include="PhysicalMaze.cpp" />
+    <ClCompile Include="player_multi.cpp" />
+    <ClCompile Include="SingleHex.cpp" />
+    <ClCompile Include="UserManager.cpp" />
+    <ClCompile Include="VirtualMaze.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="HexGame.h" />
+    <ClInclude Include="HexgameRunner.h" />
+    <ClInclude Include="HexGrid.h" />
+    <ClInclude Include="Leaderboard.h" />
+    <ClInclude Include="MainScene.h" />
+    <ClInclude Include="NetworkManager.h" />
+    <ClInclude Include="PhysicalMaze.h" />
+    <ClInclude Include="SingleHex.h" />
+    <ClInclude Include="UserManager.h" />
+    <ClInclude Include="VirtualMaze.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -136,17 +162,6 @@
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;sfml-audio.lib;sfml-network.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="HexGrid.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="NetworkManager.cpp" />
-    <ClCompile Include="SingleHex.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="HexGrid.h" />
-    <ClInclude Include="NetworkManager.h" />
-    <ClInclude Include="SingleHex.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -16,7 +16,8 @@ enum class MessageType : sf::Uint8 {
     GridData,
     PlayerPosition,
     GameState,
-    GridNumbers  // 添加格子标号消息类型
+    GridNumbers,  // 添加格子标号消息类型
+    CheckpointData  // 添加检查点数据消息类型
 };
 
 // 网络消息结构
@@ -46,6 +47,9 @@ public:
     // 发送游戏结束时间
     bool sendGameEndTime(float time);
     
+    // 发送检查点数据
+    bool sendCheckpointData(int checkA, int checkB, int pathSize);
+    
     // 接收消息
     bool receiveMessage(NetworkMessage& msg);
     
@@ -72,30 +76,37 @@ public:
     using PlayerPositionCallback = std::function<void(const HexCoord&)>;
     using GameStateCallback = std::function<void(bool, float, bool)>;
     using GridNumbersCallback = std::function<void(const std::unordered_map<HexCoord, std::vector<int>>&)>; // 添加格子标号回调
+    using CheckpointDataCallback = std::function<void(int, int, int)>; // 添加检查点数据回调(checkA, checkB, pathSize)
 
     void setGridDataCallback(GridDataCallback callback);
     void setPlayerPositionCallback(PlayerPositionCallback callback);
     void setGameStateCallback(GameStateCallback callback);
     void setGridNumbersCallback(GridNumbersCallback callback); // 设置格子标号回调
+    void setCheckpointDataCallback(CheckpointDataCallback callback); // 设置检查点数据回调
     void setClientConnectedCallback(std::function<void()> callback);
 
     bool isServer() const;
     bool hasClientConnected() const;
 
+    // 客户端相关
+    sf::TcpSocket serverSocket;
+
+    //服务器相关
+    std::vector<std::unique_ptr<sf::TcpSocket>> clients;
+
 private:
-    NetworkManager() = default;
+    NetworkManager() : _isServer(false), isRunning(false) {} // 初始化成员变量
     ~NetworkManager();
     
     // 禁止拷贝和赋值
     NetworkManager(const NetworkManager&) = delete;
     NetworkManager& operator=(const NetworkManager&) = delete;
     
+    // 标识是服务器还是客户端
+    bool _isServer;
+    
     // 服务器相关
     sf::TcpListener listener;
-    std::vector<std::unique_ptr<sf::TcpSocket>> clients;
-    
-    // 客户端相关
-    sf::TcpSocket serverSocket;
     
     // 消息队列
     std::queue<NetworkMessage> messageQueue;
@@ -125,5 +136,6 @@ private:
     PlayerPositionCallback playerPositionCallback;
     GameStateCallback gameStateCallback;
     GridNumbersCallback gridNumbersCallback; // 添加格子标号回调
+    CheckpointDataCallback checkpointDataCallback; // 添加检查点数据回调
     std::function<void()> clientConnectedCallback;
 }; 
