@@ -56,6 +56,9 @@ public:
     
     // 获取当前场景状态
     SceneState getState() const;
+    
+    // 重置场景状态为主菜单
+    void resetState();
 
 private:
     sf::RenderWindow window;

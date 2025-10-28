@@ -261,3 +261,8 @@ void MainScene::run() {
 MainScene::SceneState MainScene::getState() const {
     return currentState;
 }
+
+// 重置场景状态为主菜单
+void MainScene::resetState() {
+    currentState = SceneState::MAIN_MENU;
+}

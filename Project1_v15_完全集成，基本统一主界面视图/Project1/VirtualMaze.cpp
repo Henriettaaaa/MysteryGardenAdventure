@@ -3,6 +3,12 @@
 #include <string>   // 为std::string
 #include <utility>  // 为std::pair
 
+namespace {
+    bool g_playerWon = false;
+    sf::Clock g_victoryTimer;
+    bool g_timerStarted = false;
+}
+
 VirtualMaze::VirtualMaze(int physicalSize) : size(physicalSize), showRelativePaths(false), playerInteractionEnabled(false), isTimerRunning(false), elapsedTime(0.0f), playersHaveMet(false), 
     playerAHasItem(false), playerBHasItem(false), playerAUsedItem(false), playerBUsedItem(false), 
     playerADelayed(false), playerBDelayed(false), delayDuration(2.0f), 
@@ -480,7 +486,11 @@ void VirtualMaze::display() {
             }
             else if (playerInteractionEnabled && event.type == sf::Event::KeyPressed) {
                 handleKeyPressA(event.key.code);
+                // !可能是改这里
+                std::cout<<"new Change here!!Amove"<<std::endl;
                 handleKeyPressB(event.key.code);
+                // !可能是改这里
+                std::cout<<"new Change here!!Amove"<< std::endl;
 
                 // 检查是否到达终点
                 if (playerPositionA.first == virtualSize - 2 && playerPositionA.second == virtualSize - 2) {
@@ -546,15 +556,30 @@ void VirtualMaze::displaySingle(){
             }
             
             else if (playerInteractionEnabled && event.type == sf::Event::KeyPressed) {
-                // !要改，不受迷宫路线限制，在窗口内移动就行
+                // 不受迷宫路线限制，在窗口内移动就行
                 handleKeyPressA_free(event.key.code);
 
-                // !检查是否到达终点，但是这个终点值需要重新计算，根据生成迷宫的最短路径的中点
-                if (playerPositionA.first == absolutePathA.back() / virtualSize 
-                    && playerPositionA.second == absolutePathA.back() % virtualSize) {
+                // !路线点位检查
+                if (playerPositionA.first == absolutePathA[checkpoint] / virtualSize 
+                    && playerPositionA.second == absolutePathA[checkpoint] % virtualSize) {
+                    checkpoint++;
+                }
+
+                // !检查是否到达终点，由点位检查都通过作为判定
+                if (checkpoint == absolutePathA.size()) {
                     std::cout << "Congratulations! You win!" << std::endl;
                     // !停止计时器
                     isTimerRunning = false;
+                    
+                    // 获取drawSingleMap中定义的静态变量的引用
+                    // 使用全局变量
+                    g_playerWon = true;
+                    
+                    if (!g_timerStarted) {
+                        g_victoryTimer.restart(); // 重置胜利倒计时
+                        g_timerStarted = true;
+                    }
+                    
                     // 更新玩家格子颜色
                     updatePlayerCellA();
                 }
@@ -605,7 +630,55 @@ void VirtualMaze::drawSingleMap() {
     window.clear(sf::Color::White);
     showRelativePaths = true;
     //单人模式的本质就是直接只画相对路径，不需要走迷宫的步骤
-    drawRelativePaths();    
+    drawRelativePaths();
+    
+    // 检查是否处于胜利状态，并显示胜利信息
+    static bool& playerWon = *new bool(false);
+    static sf::Clock& victoryTimer = *new sf::Clock();
+    static bool& timerStarted = *new bool(false);
+    
+    if (playerWon) {
+        // 创建胜利文本
+        sf::Text winText;
+        winText.setFont(font);
+        winText.setString("You Win!");
+        winText.setCharacterSize(40);
+        winText.setFillColor(sf::Color::Red);
+        
+        // 居中文本
+        sf::FloatRect textBounds = winText.getLocalBounds();
+        winText.setPosition(
+            (virtualSize * CELL_SIZE - textBounds.width) / 2.0f,
+            (virtualSize * CELL_SIZE - textBounds.height) / 2.0f
+        );
+        
+        // 显示倒计时文本
+        int remainingTime = 3 - static_cast<int>(victoryTimer.getElapsedTime().asSeconds());
+        if (remainingTime >= 0) {
+            sf::Text countdownText;
+            countdownText.setFont(font);
+            countdownText.setString("Returning to main menu in " + std::to_string(remainingTime) + "s");
+            countdownText.setCharacterSize(20);
+            countdownText.setFillColor(sf::Color::Black);
+            
+            sf::FloatRect countdownBounds = countdownText.getLocalBounds();
+            countdownText.setPosition(
+                (virtualSize * CELL_SIZE - countdownBounds.width) / 2.0f,
+                (virtualSize * CELL_SIZE - countdownBounds.height) / 2.0f + 50.0f
+            );
+            
+            window.draw(winText);
+            window.draw(countdownText);
+        }
+        
+        // 检查是否已经过了3秒
+        if (victoryTimer.getElapsedTime().asSeconds() >= 3.0f) {
+            timerStarted = false;   // 重置标志以便下次使用
+            playerWon = false;      // 重置胜利状态
+            window.close();         // 关闭游戏窗口
+            return;                 // 退出函数，返回到main函数
+        }
+    }
 }
 
 
@@ -1001,9 +1074,10 @@ void VirtualMaze::displayRelativeMaze() {
                     else if (event.key.code == sf::Keyboard::Left) newPos.second--;
                     else if (event.key.code == sf::Keyboard::Right) newPos.second++;
                     
-                    if (canMoveTo(newPos.first, newPos.second)) {
+                    if (canMoveTo_free(newPos.first, newPos.second)) {
                         playerPositionA = newPos;
-                        
+                        // !可能是改这里
+                        std::cout<<"Change here!!Amove"<< std::endl;
                         // 检查是否到达终点
                         if (playerPositionA.first == 1 && playerPositionA.second == 1) {
                             playerAWon = true;
@@ -1025,9 +1099,10 @@ void VirtualMaze::displayRelativeMaze() {
                     else if (event.key.code == sf::Keyboard::A) newPos.second--;
                     else if (event.key.code == sf::Keyboard::D) newPos.second++;
                     
-                    if (canMoveTo(newPos.first, newPos.second)) {
+                    if (canMoveTo_free(newPos.first, newPos.second)) {
                         playerPositionB = newPos;
-                        
+                        // !可能是改这里
+                        std::cout<<"Change here!!Bmove"<< std::endl;
                         // 检查是否到达终点
                         if (playerPositionB.first == 1 && playerPositionB.second == 1) {
                             playerBWon = true;
@@ -1269,6 +1344,40 @@ void VirtualMaze::displayRelativeMaze() {
             );
             
             window.draw(winText);
+            
+            // 添加倒计时逻辑
+            static sf::Clock victoryTimer;
+            static bool timerStarted = false;
+            
+            if (!timerStarted) {
+                victoryTimer.restart(); // 重置计时器
+                timerStarted = true;    // 标记计时器已启动
+            }
+            
+            // 显示倒计时文本
+            int remainingTime = 3 - static_cast<int>(victoryTimer.getElapsedTime().asSeconds());
+            if (remainingTime >= 0) {
+                sf::Text countdownText;
+                countdownText.setFont(font);
+                countdownText.setString("Returning to main menu in " + std::to_string(remainingTime) + "s");
+                countdownText.setCharacterSize(20);
+                countdownText.setFillColor(sf::Color::White);
+                
+                sf::FloatRect countdownBounds = countdownText.getLocalBounds();
+                countdownText.setPosition(
+                    (mazePixelWidth - countdownBounds.width) / 2.f,
+                    (mazePixelHeight - countdownBounds.height) / 2.f + 50.f
+                );
+                
+                window.draw(countdownText);
+            }
+            
+            // 检查是否已经过了3秒
+            if (victoryTimer.getElapsedTime().asSeconds() >= 3.0f) {
+                timerStarted = false;   // 重置标志以便下次使用
+                window.close();         // 关闭游戏窗口
+                return;                 // 退出函数，返回到main函数
+            }
         }
         
         // 更新显示

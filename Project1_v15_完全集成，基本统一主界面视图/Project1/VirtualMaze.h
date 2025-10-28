@@ -96,6 +96,8 @@ private:
     // 计算相对路径
     void calculateRelativePath(const std::vector<int>& physicalPath);
 
+    int checkpoint = 1;  //单人模式中，维护一个指针，用户走对一个格子，指针就往后移动一下
+
     // 玩家互动相关函数
     void handleKeyPressA(sf::Keyboard::Key key);
     void handleKeyPressB(sf::Keyboard::Key key);
