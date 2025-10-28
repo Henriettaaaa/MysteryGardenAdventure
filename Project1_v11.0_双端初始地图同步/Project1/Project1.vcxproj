@@ -139,10 +139,12 @@
   <ItemGroup>
     <ClCompile Include="HexGrid.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="SingleHex.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HexGrid.h" />
+    <ClInclude Include="NetworkManager.h" />
     <ClInclude Include="SingleHex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
